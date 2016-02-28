@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2016 Riccardo Leschiutta.
+
+    This file is part of Parappnoid.
+
+    Parappnoid is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Parappnoid is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<resources>
+    <string name="cancel">Annulla</string>
+    <string name="db_settings">Impostazioni DB</string>
+    <string name="delete">ELIMINA</string>
+    <string name="delete_contact_req">Eliminare questo contatto?</string>
+    <string name="edit_user">Modifica contatto</string>
+    <string name="encryption_keys">Chiavi cifratura:&#160;</string>
+    <string name="error">Errore</string>
+    <string name="error_encryption">Errore durante cifratura</string>
+    <string name="error_intent_action">Errore intent action</string>
+    <string name="error_invalid_input">Valori di input errati</string>
+    <string name="error_keys_exchange">Errore: chiavi non scambiate!</string>
+    <string name="error_keys_generation">Errore: chiavi non generate!</string>
+    <string name="error_mac">Errore durante il calcolo del MAC</string>
+    <string name="error_message_invalid">Messaggio non valido</string>
+    <string name="error_message_length">Lunghezza del messaggio errata</string>
+    <string name="error_missing_params">Errore: parametri mancanti</string>
+    <string name="error_negative_num">Errore: il numero scelto deve essere positivo</string>
+    <string name="error_no_keys">Errore: non ci sono chiavi disponibili per questo contatto</string>
+    <string name="error_operation_cancelled">Operazione annullata</string>
+    <string name="error_user_selection">Contatto non selezionato</string>
+    <string name="error_wrong_input">Valori di input sbagliati</string>
+    <string name="error_wrong_key">Errore: chiave già utilizzata</string>
+    <string name="error_wrong_passphrase">Passphrase sbagliata</string>
+    <string name="error_wrong_request_type">Errore: tipo di richiesta errata</string>
+    <string name="insert_passphprase">Inserisci la passphrase</string>
+    <string name="new_user">Nuovo contatto</string>
+    <string name="notification_content">Scrivi il nuovo messaggio...</string>
+    <string name="notification_stop">Cancella notifica</string>
+    <string name="number_keys">Numero di chiavi:&#160;</string>
+    <string name="operation_ok">Operazione conclusa con successo</string>
+    <string name="pick_user">Scegli il contatto</string>
+    <string name="pick_avatar">Scegli immagine profilo:</string>
+    <string name="please_wait">Attendere prego...</string>
+    <string name="receive_client">RICEVI (sono il Client)</string>
+    <string name="reply">RISPONDI</string>
+    <string name="save">SALVA</string>
+    <string name="send">INVIA</string>
+    <string name="send_server">INVIA (sono il Server)</string>
+    <string name="setting_edit">Modifica impostazioni DB</string>
+    <string name="setting_edit_2">Cambia passphrase e/o numero di iterazioni usati per la cifratura del DB.</string>
+    <string name="setting_notification_1">Mostra notifica nella barra notifiche</string>
+    <string name="setting_notification_2">Potrai così accedere all\'App più velocemente</string>
+    <string name="settings">Impostazioni</string>
+    <string name="type_text">inserisci qui il testo...</string>
+    <string name="users">Contatti</string>
+    <string name="write_message">Scrivi messaggio</string>
+    <string name="yes">Si</string>
+    <string name="decryption_keys">Chiavi decifratura:&#160;</string>
+    <string name="keys_available">chiavi disponibili:&#160;</string>
+    <string name="keys_per_qr">Chiavi per QR:&#160;</string>
+    <string name="new_iterations">Nuovo numero di iterazioni:&#160;</string>
+    <string name="new_passphrase">Nuova passphrase:&#160;</string>
+    <string name="old_passphrase">Vecchia passphrase:&#160;</string>
+</resources>

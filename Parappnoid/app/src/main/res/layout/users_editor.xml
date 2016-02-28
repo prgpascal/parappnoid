@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2016 Riccardo Leschiutta.
+
+    This file is part of Parappnoid.
+
+    Parappnoid is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Parappnoid is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Top toolbar -->
+    <include
+        android:id="@+id/toolbar_top"
+        layout="@layout/toolbar_top" />
+
+    <!-- Bottom toolbar -->
+    <include
+        android:id="@+id/toolbar_bottom"
+        layout="@layout/toolbar_bottom" />
+
+
+    <!-- Username -->
+    <TextView
+        android:id="@+id/labelUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/toolbar_top"
+        android:gravity="center"
+        android:text="@string/username"/>
+
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/toolbar_top"
+        android:layout_toRightOf="@id/labelUsername"
+        android:singleLine="true"
+        android:textColor="#000"/>
+
+
+
+    <!-- Avatar -->
+    <TextView
+        android:id="@+id/labelAvatar"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/username"
+        android:gravity="center"
+        android:text="@string/avatar"/>
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:src="@drawable/avatar0"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/username"
+        android:layout_alignLeft="@id/username"/>
+
+
+    <!-- Keys generation radio buttons -->
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/avatar">
+
+        <RadioButton
+            android:id="@+id/radioTRNG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/generator_trng"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/radioCSPRNG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/generator_csprng" />
+    </RadioGroup>
+
+
+    <!-- Number of Keys -->
+    <TextView
+        android:id="@+id/labelNumberOfKeys"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/radioGroup"
+        android:gravity="center"
+        android:text="@string/number_keys"/>
+
+    <EditText
+        android:id="@+id/numberOfKeys"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/radioGroup"
+        android:layout_toRightOf="@id/labelNumberOfKeys"
+        android:singleLine="true"
+        android:inputType="number"
+        android:textColor="#000"/>
+
+
+
+    <!-- Keys per QR -->
+    <TextView
+        android:id="@+id/labelKeysPerQR"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/labelNumberOfKeys"
+        android:gravity="center"
+        android:text="@string/keys_per_qr"/>
+
+    <EditText
+        android:id="@+id/keysPerQR"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/numberOfKeys"
+        android:layout_toRightOf="@id/labelKeysPerQR"
+        android:singleLine="true"
+        android:inputType="number"
+        android:textColor="#000"/>
+
+
+
+    <Button
+        android:id="@+id/sendKeys"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/keysPerQR"
+        android:gravity="center"
+        android:text="@string/send_server"/>
+
+    <Button
+        android:id="@+id/readKeys"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sendKeys"
+        android:gravity="center"
+        android:text="@string/receive_client"/>
+
+
+
+    <!-- Riempitivo -->
+    <!-- TMP, basta eliminare la textview dentro la ScrollView e
+    e lasciare la ScrollView -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/readKeys"
+        android:layout_above="@id/toolbar_bottom">
+
+        <TextView
+            android:id="@+id/output"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </ScrollView>
+
+</RelativeLayout>
