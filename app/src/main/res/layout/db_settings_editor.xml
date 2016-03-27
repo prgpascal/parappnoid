@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2016 Riccardo Leschiutta.
+
+    This file is part of Parappnoid.
+
+    Parappnoid is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Parappnoid is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Top toolbar -->
+    <include
+        android:id="@+id/toolbar_top"
+        layout="@layout/toolbar_top" />
+
+    <!-- Old Passphrase -->
+    <TextView
+        android:id="@+id/labelOldPassphrase"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/toolbar_top"
+        android:gravity="center"
+        android:text="@string/old_passphrase"/>
+
+    <EditText
+        android:id="@+id/oldPassphrase"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/toolbar_top"
+        android:layout_toRightOf="@id/labelOldPassphrase"
+        android:singleLine="true"
+        android:inputType="textPassword"
+        android:textColor="#000"/>
+
+
+
+    <!-- New Passphrase -->
+    <TextView
+        android:id="@+id/labelNewPassphrase"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/labelOldPassphrase"
+        android:gravity="center"
+        android:text="@string/new_passphrase"/>
+
+    <EditText
+        android:id="@+id/newPassphrase"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/oldPassphrase"
+        android:layout_toRightOf="@id/labelNewPassphrase"
+        android:singleLine="true"
+        android:inputType="textPassword"
+        android:textColor="#000"/>
+
+
+    <!-- New Iterations -->
+    <TextView
+        android:id="@+id/labelNewIterations"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/labelNewPassphrase"
+        android:gravity="center"
+        android:text="@string/new_iterations"/>
+
+    <EditText
+        android:id="@+id/newIterations"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/newPassphrase"
+        android:layout_toRightOf="@id/labelNewIterations"
+        android:singleLine="true"
+        android:inputType="number"
+        android:textColor="#000"/>
+
+</RelativeLayout>

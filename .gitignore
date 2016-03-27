@@ -1,0 +1,8 @@
+.DS_Store
+/build
+/captures
+.gradle
+.idea
+/local.properties
+*.iml
+/android-qr-data-transfer

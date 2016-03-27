@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2016 Riccardo Leschiutta.
+
+    This file is part of Parappnoid.
+
+    Parappnoid is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Parappnoid is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<resources>
+    <string name="app_name" translatable="false">Parappnoid</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="yes">Yes</string>
+    <string name="no" translatable="false">No</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="notification_content">Write a new message...</string>
+    <string name="error">Error</string>
+    <string name="db_settings">DB Settings</string>
+    <string name="error_wrong_input">Error: wrong input values</string>
+    <string name="operation_ok">Operation OK</string>
+    <string name="error_intent_action">Error: wrong intent action</string>
+    <string name="error_user_selection">Error: user not selected</string>
+    <string name="error_message_length">Error: wrong message length</string>
+    <string name="error_no_keys">No keys available</string>
+    <string name="error_wrong_key">Error: Key already used</string>
+    <string name="error_mac">Error: MAC calculation</string>
+    <string name="encryption_keys">Encryption keys:&#160;</string>
+    <string name="decryption_keys">Decryption keys:&#160;</string>
+    <string name="error_missing_params">Error: missing params</string>
+    <string name="error_invalid_input">Error: input values not valid</string>
+    <string name="error_negative_num">Error: negative number</string>
+    <string name="error_keys_generation">Error: keys not generated</string>
+    <string name="edit_user">Edit Contact</string>
+    <string name="new_user">New Contact</string>
+    <string name="error_keys_exchange">Error: keys not exchanged!</string>
+    <string name="delete_contact_req">Delete this contact?</string>
+    <string name="pick_avatar">Pick Avatar:</string>
+    <string name="insert_passphprase">Insert Passphrase</string>
+    <string name="error_operation_cancelled">Operation Cancelled</string>
+    <string name="pick_user">Pick Contact</string>
+    <string name="users">Contacts</string>
+    <string name="error_wrong_passphrase">Wrong passphrase</string>
+    <string name="error_wrong_request_type">Error: wrong request type</string>
+    <string name="keys_available">keys available:&#160;</string>
+    <string name="error_message_invalid">Message not valid</string>
+    <string name="send">SEND</string>
+    <string name="error_encryption">Error during encryption</string>
+    <string name="old_passphrase">Old passphrase:&#160;</string>
+    <string name="new_passphrase">New passphrase:&#160;</string>
+    <string name="new_iterations">New iterations:&#160;</string>
+    <string name="write_message">Write message</string>
+    <string name="settings">Settings</string>
+    <string name="notification_stop">Stop notification</string>
+    <string name="username" translatable="false">Username:&#160;</string>
+    <string name="avatar" translatable="false">Avatar:&#160;</string>
+    <string name="generator_trng" translatable="false">TRNG (external file)</string>
+    <string name="generator_csprng" translatable="false">CSPRNG (SecureRandom)</string>
+    <string name="number_keys">Number of keys:&#160;</string>
+    <string name="keys_per_qr">Keys per QR:&#160;</string>
+    <string name="send_server">SEND (I\'m the Server)</string>
+    <string name="receive_client">RECEIVE (I\'m the Client)</string>
+    <string name="type_text">type text here...</string>
+    <string name="delete">DELETE</string>
+    <string name="save">SAVE</string>
+    <string name="reply">REPLY</string>
+    <string name="setting_notification_1">Show notification when Parappnoid is active</string>
+    <string name="setting_notification_2">So you can easily write new messages</string>
+    <string name="setting_edit">Edit DB settings</string>
+    <string name="setting_edit_2">Change passphrase and/or iterations used for the database encryption.</string>
+</resources>

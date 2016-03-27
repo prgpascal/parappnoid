@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2016 Riccardo Leschiutta.
+
+    This file is part of Parappnoid.
+
+    Parappnoid is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Parappnoid is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Disable the ActionBar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Theme customization -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">#DDD</item>
+        <item name="android:textColor">#000</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+
+        <!-- Evitare contextual menu top -->
+        <item name="windowActionModeOverlay">true</item>
+
+    </style>
+
+
+    <!-- Bottom Toolbar theme -->
+    <style name="AppTheme.BottomToolbar" parent="AppTheme">
+        <item name="actionMenuTextColor">#000</item>
+    </style>
+
+
+    <!-- Settings Activity Theme (without ActionBar) -->
+    <style name="SettingsTheme" parent="AppTheme">
+
+        <!-- Text Color -->
+
+        <!-- CheckBox color -->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/black</item>
+
+    </style>
+
+</resources>

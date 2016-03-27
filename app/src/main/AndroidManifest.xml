@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.prgpascal.parappnoid" >
+
+    <uses-sdk android:minSdkVersion="14" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
+    <!--  Market filtering -->
+    <uses-feature android:name="android.hardware.wifi.direct" android:required="true" />
+
+
+    <application
+        android:name="com.prgpascal.parappnoid.ParappnoidApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".UsersEditorActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".UsersListActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".WriteMessageActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".ReadMessageActivity"
+            android:launchMode="singleTop">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"
+                    android:host="parappnoid.riccardoleschiutta.com"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/SettingsTheme">
+        </activity>
+
+        <activity
+            android:name=".DBSettingsEditorActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+    </application>
+</manifest>
