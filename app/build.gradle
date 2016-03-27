@@ -2,6 +2,9 @@ apply plugin: 'com.android.application'
 
 repositories {
     jcenter()
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 android {
@@ -34,6 +37,6 @@ dependencies {
     compile files('libs/sqlcipher.jar')
     compile files('libs/sqlcipher-javadoc.jar')
     compile files('libs/commons-codec-1.10.jar')
-    compile project(':android-qr-data-transfer')
+    compile 'com.github.prgpascal:android-qr-data-transfer:1.0.2'
     compile 'com.android.support:recyclerview-v7:23.0.1'
 }
