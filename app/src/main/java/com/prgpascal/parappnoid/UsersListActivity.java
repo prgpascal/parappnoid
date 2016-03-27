@@ -36,7 +36,6 @@ import static com.prgpascal.parappnoid.utils.Constants.TAG_DIALOG;
 import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
 import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
 
-
 /**
  * Activity that allows the user to select an AssociatedUser.
  * It returns the selected AssociatedUser if the activityRequestType is "PICK_USER".

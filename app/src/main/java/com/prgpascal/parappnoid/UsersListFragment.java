@@ -35,7 +35,6 @@ import com.prgpascal.parappnoid.utils.DBUtils;
 
 import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
 
-
 /**
  * Fragment that contains the list of associated users.
  */
