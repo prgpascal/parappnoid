@@ -1,4 +1,4 @@
-<img align="right" src="bluerand-logo.png"/>
+<img align="right" src="parappnoid-logo.png"/>
 
 # Parappnoid
 Android App that allows you to encrypt text messages with the one-time pad encryption technique and exchange them through various third party messaging services, such as WhatsApp, Facebook, SMS etc. 
