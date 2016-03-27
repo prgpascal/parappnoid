@@ -82,8 +82,7 @@ public final class Constants {
         public static final int DIGEST_LENGTH = 32;              // Number of bytes (characters) for the digest
         public static final int PADS_LENGTH = 101 + 32;          // Total amount of bytes for the OTP key
         public static final int PURPOSE_LENGTH = 1;              // Number of bytes for the purpose tag
-        public static final String MESSAGE_URI_PREFIX = "http://parappnoid.com/message/"; // Prefix used for message exchange
-
+        public static final String MESSAGE_URI_PREFIX = "http://parappnoid.riccardoleschiutta.com/"; // Prefix used for message exchange
     }
 
 
