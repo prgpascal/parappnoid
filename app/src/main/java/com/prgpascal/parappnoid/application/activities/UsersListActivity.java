@@ -33,11 +33,19 @@ import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.UsersListFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
-import com.prgpascal.parappnoid.utils.MyAlertDialogs.*;
+import com.prgpascal.parappnoid.utils.MyAlertDialogs.MyAlertDialogInterface;
+import com.prgpascal.parappnoid.utils.MyAlertDialogs.MyPassphraseDialogFragment;
+
 import java.util.ArrayList;
-import static com.prgpascal.parappnoid.utils.Constants.TAG_DIALOG;
-import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
+
 import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
+import static com.prgpascal.parappnoid.utils.Constants.TAG_DIALOG;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.ACTIVITY_REQUEST_TYPE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.DIALOG_TYPE_REQUEST_PASSPHRASE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.EDIT_USERS;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.NEW_USER;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.PICK_USER;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELECTED_USER;
 
 /**
  * Activity that allows the user to select an AssociatedUser.
@@ -45,28 +53,26 @@ import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
  * Or pass the AssociatedUser to UsersEditorActivity if activityRequestType is "EDIT_USER".
  */
 public class UsersListActivity extends AppCompatActivity implements MyAlertDialogInterface, DBUtils.DBResponseListener {
-    private UsersListFragment usersFragment;            // The fragment that will contain the users list.
     public String activityRequestType;                  // The type of request for this activity.
     private char[] passphrase;                          // Passphrase inserted by the user
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Check and get all the Intent parameters.
-        // If a parameter is missing, show an error and finish the activity.
-        Intent intent = getIntent();
-        if (intent.hasExtra(ACTIVITY_REQUEST_TYPE)){
-
-            // Parameters OK, read them all!
+        if (getIntent().hasExtra(ACTIVITY_REQUEST_TYPE)) {
             activityRequestType = getIntent().getStringExtra(ACTIVITY_REQUEST_TYPE);
 
-            // IMPORTANT!
-            // createLayout() is called after the user inserted the passphrase and only if it is correct.
+            // Param not mandatory!
+            if (getIntent().hasExtra(PASSPHRASE)) {
+                passphrase = getIntent().getCharArrayExtra(PASSPHRASE);
+                createLayout();
 
-            // Request the passphrase to the user
-            showNewDialog(DIALOG_TYPE_REQUEST_PASSPHRASE);
+            } else {
+                // Request the passphrase to the user
+                showNewDialog(DIALOG_TYPE_REQUEST_PASSPHRASE);
+            }
 
         } else {
             // One or more parameters are missing!
@@ -76,10 +82,10 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
         }
     }
 
-
-
-    /** Show new dialog. */
-    public void showNewDialog(int dialogType){
+    /**
+     * Show new dialog.
+     */
+    public void showNewDialog(int dialogType) {
         switch (dialogType) {
             case DIALOG_TYPE_REQUEST_PASSPHRASE:
                 // Ask the passphrase to the user.
@@ -92,33 +98,31 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
         }
     }
 
-
-    /** A positive button has been clicked */
-    public void doPositiveClick(int dialogType, char[] result){
+    /**
+     * A positive button has been clicked
+     */
+    public void doPositiveClick(int dialogType, char[] result) {
         switch (dialogType) {
             case DIALOG_TYPE_REQUEST_PASSPHRASE:
-
-                // At this point we have the passphrase inserted.
-                // update the reference.
                 passphrase = result;
-
-                // Proceed creating the layout.
                 createLayout();
         }
     }
 
-    /** A negative button has been clicked */
-    public void doNegativeClick(int dialogType, char[] result){
+    /**
+     * A negative button has been clicked
+     */
+    public void doNegativeClick(int dialogType, char[] result) {
         // The user canceled the passphrase input.
         // Show an error message than finish the Activity.
         Toast.makeText(getApplicationContext(), R.string.error_operation_cancelled, Toast.LENGTH_SHORT).show();
         finish();
     }
 
-
-
-    /** Create the layout */
-    private void createLayout(){
+    /**
+     * Create the layout
+     */
+    private void createLayout() {
         // Set the layout
         setContentView(R.layout.users_list_activity);
 
@@ -128,12 +132,12 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
         // PickUsers Fragment
         Bundle b = new Bundle();
         b.putCharArray(PASSPHRASE, passphrase);
-        usersFragment = new UsersListFragment();
+        UsersListFragment usersFragment = new UsersListFragment();
         usersFragment.setArguments(b);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, usersFragment).commit();
 
         // FAB
-        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,16 +149,15 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
             }
         });
 
-
         // Hide the FAB if the request type is PICK_USER
-        if (activityRequestType.equals(PICK_USER)){
+        if (activityRequestType.equals(PICK_USER)) {
             fab.setVisibility(View.GONE);
         }
     }
 
-
-
-    /** Edit the Toolbars */
+    /**
+     * Edit the Toolbars
+     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -166,15 +169,13 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
             getSupportActionBar().setTitle(R.string.pick_user);
     }
 
-
-
     /**
      * Method called by the RecyclerViewAdapter when a user is selected.
      * Is called either if the user want to pick an AssociatedUser or edit it.
      *
      * @param user the selected user.
      */
-    public void userSelected(AssociatedUser user){
+    public void userSelected(AssociatedUser user) {
         if (activityRequestType.equals(PICK_USER)) {
             // User selected, return to the calling Activity.
             Intent returnIntent = new Intent();
@@ -193,15 +194,13 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
         }
     }
 
-
-
     /**
      * A Database operation has finished.
      *
      * @param result success or failure of database operation.
      */
-    public void onDBResponse(boolean result){
-        if (result){
+    public void onDBResponse(boolean result) {
+        if (result) {
             // DB Operation OK
             // Do nothing
         } else {
@@ -216,9 +215,10 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
      *
      * @param result the ArrayList of associated users.
      */
-    public void onDBResponse(ArrayList<AssociatedUser> result){
-        if (result != null){
-            usersFragment.updateLayout(result);
+    public void onDBResponse(ArrayList<AssociatedUser> result) {
+        if (result != null) {
+            UsersListFragment frag = (UsersListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            frag.updateLayout(result);
         }
     }
 }

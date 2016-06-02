@@ -103,6 +103,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             });
 
         } else {
+            // Handle the clicks on this list item.
+            (holder.layout.findViewById(R.id.container)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // User picked
+                    activity.userSelected(users.get(position));
+                }
+            });
+
             // Handle the clicks on the Edit button of this list item.
             (holder.layout.findViewById(R.id.edit)).setOnClickListener(new View.OnClickListener() {
                 @Override

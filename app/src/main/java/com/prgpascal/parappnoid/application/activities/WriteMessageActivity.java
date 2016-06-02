@@ -56,10 +56,9 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
     private TextView contentLengthCounter;      // TextView that shows the length of message.
     private AssociatedUser selectedUser;        // The selected AssociatedUser.
     public String activityRequestType;          // The type of request for this activity.
-    private char[] passphrase = null;           // Passphrase inserted by the user
-    private DBUtils dbUtils;                    // Object used for DB operations
+    private char[] passphrase;                  // Passphrase inserted by the user.
+    private DBUtils dbUtils;                    // Object used for DB operations.
     private String hexCiphertext;               // HEX version of the ciphertext.
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,26 +68,14 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         dbUtils = DBUtils.getNewInstance(WriteMessageActivity.this);
 
         // Check and get all the Intent parameters.
-        // If a parameter is missing, show an error and finish the activity.
-        Intent intent = getIntent();
-        if (intent.hasExtra(ACTIVITY_REQUEST_TYPE)) {
-
-            // Parameters OK, read them all!
-            activityRequestType = intent.getStringExtra(ACTIVITY_REQUEST_TYPE);
+        if (getIntent().hasExtra(ACTIVITY_REQUEST_TYPE) && getIntent().hasExtra(PASSPHRASE)) {
+            activityRequestType = getIntent().getStringExtra(ACTIVITY_REQUEST_TYPE);
+            passphrase = getIntent().getCharArrayExtra(PASSPHRASE);
 
             if (activityRequestType.equals(REPLY_MESSAGE)) {
-
-                // The ActivityRequestType is "Reply message"
-                // So read all the data necessary for creating the reply.
-                if (intent.hasExtra(SELECTED_USER) &&
-                        (intent.hasExtra(PASSPHRASE))) {
-
-                    // Parameters OK, read them all!
-                    selectedUser = intent.getParcelableExtra(SELECTED_USER);
-                    passphrase = intent.getCharArrayExtra(PASSPHRASE);
-
-                    // At this point the right AssociatedUser to be used is selected.
-                    // Proceed with layout creation.
+                // Reply to a message
+                if (getIntent().hasExtra(SELECTED_USER)) {
+                    selectedUser = getIntent().getParcelableExtra(SELECTED_USER);
                     createLayout();
 
                 } else {
@@ -99,10 +86,10 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
                 }
 
             } else if (activityRequestType.equals(NEW_MESSAGE)) {
-                // The ActivityRequestType is "NEW message".
                 // Pick the correct AssociatedUser to be used.
-                intent = new Intent(WriteMessageActivity.this, UsersListActivity.class);
+                Intent intent = new Intent(WriteMessageActivity.this, UsersListActivity.class);
                 intent.putExtra(ACTIVITY_REQUEST_TYPE, PICK_USER);
+                intent.putExtra(PASSPHRASE, passphrase);
                 startActivityForResult(intent, PICK_USER_REQUEST_CODE);
 
             } else {
@@ -119,8 +106,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
             finish();
         }
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -144,8 +129,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
             }
         }
     }
-
-
 
     /** Create the layout */
     private void createLayout() {
@@ -176,8 +159,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         });
     }
 
-
-
     /** Edit the Toolbars */
     private void initToolbars() {
         // Toolbar TOP
@@ -202,7 +183,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
                     }
                 }
         }
-
 
         // Toolbar BOTTOM
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.bottomToolbar);
@@ -230,8 +210,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         });
     }
 
-
-
     /**
      * Check if the plaintext is valid.
      * (i.e. not null, doesn't start with " " and its length is < than the maximum available)
@@ -242,8 +220,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
     private boolean isValid(String plaintext){
         return ( MyUtils.isValid(plaintext) && (plaintext.length() < PLAINTEXT_LENGTH) );
     }
-
-
 
     /**
      * Try the encryption of the plaintext message.
@@ -326,8 +302,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         return hexMessage;
     }
 
-
-
     /**
      * A Database operation has finished.
      *
@@ -353,7 +327,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
             }
         }
     }
-
 
     /**
      * A Database operation has finished.
