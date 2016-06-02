@@ -32,9 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.application.model.AssociatedUser;
+import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
-import com.prgpascal.parappnoid.application.model.OneTimePad;
+import com.prgpascal.parappnoid.model.OneTimePad;
 import com.prgpascal.parappnoid.utils.MyUtils;
 import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
 import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.*;

@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid.application.model;
+package com.prgpascal.parappnoid.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

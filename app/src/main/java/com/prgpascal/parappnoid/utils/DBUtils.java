@@ -37,8 +37,8 @@ import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.*;
 import static com.prgpascal.parappnoid.utils.Constants.*;
 
 import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.application.model.AssociatedUser;
-import com.prgpascal.parappnoid.application.model.OneTimePad;
+import com.prgpascal.parappnoid.model.AssociatedUser;
+import com.prgpascal.parappnoid.model.OneTimePad;
 
 /**
  * Class that performs all the DB operations.
@@ -50,7 +50,6 @@ public class DBUtils {
     private String dbName;                  // The Database name
     private int iterations;                 // The number of iterations for the KDF implemented by SQLCipher
     private ProgressDialog progressDialog;  // ProgressDialog used during operations
-
 
     private String CREATE_USERS_TABLE =
             "create table if not exists " +
@@ -129,6 +128,25 @@ public class DBUtils {
         this.iterations = iterations;
     }
 
+    //TODO new
+    public boolean performLogin(char[] passphrase){
+        // Open the Database, if an exception is catched here, the passphrase is wrong.
+        try {
+            SQLiteDatabase db = openDatabase(passphrase);
+            return true;
+        } catch (SQLiteException e) {
+            return false;
+        }
+    }
+
+    //TODO new
+    public char[] eraseCharArray(char[] charArray){
+        for (int i=0; i<charArray.length; i++){
+            charArray[i] = 'X';
+        }
+        charArray = null;
+        return charArray;
+    }
 
 
     /**
@@ -137,8 +155,9 @@ public class DBUtils {
      *
      * @param passphrase the passphrase for the Database.
      * @return opened SQLite Database instance.
+     * @throws SQLiteException if the passphrase is wrong.
      */
-    private SQLiteDatabase openDatabase(char[] passphrase) {
+    private SQLiteDatabase openDatabase(char[] passphrase) throws SQLiteException {
 
         // Set the number of iterations for the KDF
         SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
