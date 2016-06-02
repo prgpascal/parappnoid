@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid;
+package com.prgpascal.parappnoid.application.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,6 +28,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
+
+import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.fragments.UsersListFragment;
 import com.prgpascal.parappnoid.utils.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.utils.MyAlertDialogs.*;

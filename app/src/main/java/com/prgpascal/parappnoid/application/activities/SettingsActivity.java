@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid;
+package com.prgpascal.parappnoid.application.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,6 +28,8 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v7.app.AppCompatActivity;
+
+import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.utils.MyNotificationManager;
 import static com.prgpascal.parappnoid.utils.Constants.*;
 

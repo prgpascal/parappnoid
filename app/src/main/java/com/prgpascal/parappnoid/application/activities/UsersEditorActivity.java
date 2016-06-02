@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid;
+package com.prgpascal.parappnoid.application.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,7 +27,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,15 +36,15 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.utils.*;
 import com.prgpascal.parappnoid.utils.MyAlertDialogs.*;
 import com.prgpascal.qrdatatransfer.TransferActivity;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.prgpascal.parappnoid.utils.Constants.DEBUG_TAG;
 import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.*;
 import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
 import static com.prgpascal.parappnoid.utils.Constants.KeyExchangeConstants.*;

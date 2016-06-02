@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid;
+package com.prgpascal.parappnoid.application;
 
 import android.app.Application;
 import com.prgpascal.parappnoid.utils.PRNGFixes;

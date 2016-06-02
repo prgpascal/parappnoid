@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid;
+package com.prgpascal.parappnoid.application.activities;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -30,6 +30,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.utils.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.utils.OneTimePad;

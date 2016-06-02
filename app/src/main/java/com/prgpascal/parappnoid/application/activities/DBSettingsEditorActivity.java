@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid;
+package com.prgpascal.parappnoid.application.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +27,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.utils.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.utils.MyUtils;

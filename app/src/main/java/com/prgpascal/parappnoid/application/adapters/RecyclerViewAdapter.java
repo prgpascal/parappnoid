@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid;
+package com.prgpascal.parappnoid.application.adapters;
 
 import java.util.ArrayList;
 import android.content.Context;
@@ -28,6 +28,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.activities.UsersListActivity;
 import com.prgpascal.parappnoid.utils.AssociatedUser;
 import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
 

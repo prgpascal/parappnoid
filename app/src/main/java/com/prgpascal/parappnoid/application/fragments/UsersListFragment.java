@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid;
+package com.prgpascal.parappnoid.application.fragments;
 
 import java.util.ArrayList;
 
@@ -30,6 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.adapters.RecyclerViewAdapter;
 import com.prgpascal.parappnoid.utils.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
 

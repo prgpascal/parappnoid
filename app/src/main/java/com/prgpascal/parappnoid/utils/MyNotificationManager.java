@@ -26,7 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.WriteMessageActivity;
+import com.prgpascal.parappnoid.application.activities.WriteMessageActivity;
 
 import static com.prgpascal.parappnoid.utils.Constants.PREFERENCES;
 import static com.prgpascal.parappnoid.utils.Constants.SHOW_NOTIFICATION;
