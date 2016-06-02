@@ -22,8 +22,6 @@ package com.prgpascal.parappnoid.application.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.prgpascal.parappnoid.utils.OneTimePad;
-
 import java.util.HashMap;
 import java.util.Map;
 

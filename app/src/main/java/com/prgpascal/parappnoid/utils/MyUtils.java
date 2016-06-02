@@ -21,6 +21,9 @@ package com.prgpascal.parappnoid.utils;
 
 import android.util.Log;
 import android.widget.TextView;
+
+import com.prgpascal.parappnoid.application.model.OneTimePad;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import java.io.File;

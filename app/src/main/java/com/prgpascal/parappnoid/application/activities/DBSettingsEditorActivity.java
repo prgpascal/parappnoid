@@ -29,7 +29,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.utils.AssociatedUser;
+import com.prgpascal.parappnoid.application.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.utils.MyUtils;
 import java.util.ArrayList;

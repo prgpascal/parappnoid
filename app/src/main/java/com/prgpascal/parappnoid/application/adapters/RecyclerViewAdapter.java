@@ -31,7 +31,7 @@ import android.widget.TextView;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.activities.UsersListActivity;
-import com.prgpascal.parappnoid.utils.AssociatedUser;
+import com.prgpascal.parappnoid.application.model.AssociatedUser;
 import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
 
 /**

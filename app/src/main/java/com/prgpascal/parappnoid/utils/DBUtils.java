@@ -37,6 +37,8 @@ import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.*;
 import static com.prgpascal.parappnoid.utils.Constants.*;
 
 import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.model.AssociatedUser;
+import com.prgpascal.parappnoid.application.model.OneTimePad;
 
 /**
  * Class that performs all the DB operations.
