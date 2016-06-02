@@ -17,7 +17,7 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid.utils;
+package com.prgpascal.parappnoid.application.adapters;
 
 import android.content.Context;
 import android.view.View;

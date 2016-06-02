@@ -17,10 +17,13 @@
  * along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.prgpascal.parappnoid.utils;
+package com.prgpascal.parappnoid.application.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.prgpascal.parappnoid.utils.OneTimePad;
+
 import java.util.HashMap;
 import java.util.Map;
 
