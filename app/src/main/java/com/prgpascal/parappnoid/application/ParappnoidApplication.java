@@ -20,6 +20,7 @@
 package com.prgpascal.parappnoid.application;
 
 import android.app.Application;
+
 import com.prgpascal.parappnoid.utils.PRNGFixes;
 
 /**
@@ -34,4 +35,5 @@ public class ParappnoidApplication extends Application {
         // Apply the PRNGFixes patch (provided by Google team)
         PRNGFixes.apply();
     }
+
 }

@@ -24,12 +24,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.fragments.MainFragment;
 import com.prgpascal.parappnoid.application.fragments.UsersListFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
@@ -50,21 +53,27 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELE
 /**
  * Activity that allows the user to select an AssociatedUser.
  * It returns the selected AssociatedUser if the activityRequestType is "PICK_USER".
- * Or pass the AssociatedUser to UsersEditorActivity if activityRequestType is "EDIT_USER".
+ * Or send the AssociatedUser to UsersEditorActivity if activityRequestType is "EDIT_USER".
  */
-public class UsersListActivity extends AppCompatActivity implements MyAlertDialogInterface, DBUtils.DBResponseListener {
+public class UsersListActivity extends AppCompatActivity implements
+        MyAlertDialogInterface,
+        DBUtils.DBResponseListener {
+
     public String activityRequestType;                  // The type of request for this activity.
     private char[] passphrase;                          // Passphrase inserted by the user
+    private DBUtils dbUtils; //TODO singleton
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Check and get all the Intent parameters.
+        dbUtils = DBUtils.getNewInstance(UsersListActivity.this);
+
+        // Get the Intent parameters.
         if (getIntent().hasExtra(ACTIVITY_REQUEST_TYPE)) {
             activityRequestType = getIntent().getStringExtra(ACTIVITY_REQUEST_TYPE);
 
-            // Param not mandatory!
+            // Passphrase param is not mandatory!
             if (getIntent().hasExtra(PASSPHRASE)) {
                 passphrase = getIntent().getCharArrayExtra(PASSPHRASE);
                 createLayout();
@@ -99,7 +108,7 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
     }
 
     /**
-     * A positive button has been clicked
+     * A positive button has been clicked.
      */
     public void doPositiveClick(int dialogType, char[] result) {
         switch (dialogType) {
@@ -110,7 +119,7 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
     }
 
     /**
-     * A negative button has been clicked
+     * A negative button has been clicked.
      */
     public void doNegativeClick(int dialogType, char[] result) {
         // The user canceled the passphrase input.
@@ -120,32 +129,23 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
     }
 
     /**
-     * Create the layout
+     * Create the layout.
      */
     private void createLayout() {
         // Set the layout
-        setContentView(R.layout.users_list_activity);
+        setContentView(R.layout.activity_toolbar_top);
 
-        // Toolbar
-        initToolbars();
-
-        // PickUsers Fragment
-        Bundle b = new Bundle();
-        b.putCharArray(PASSPHRASE, passphrase);
-        UsersListFragment usersFragment = new UsersListFragment();
-        usersFragment.setArguments(b);
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, usersFragment).commit();
+        Fragment fragment = UsersListFragment.newInstance();
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, fragment);
+        trans.commit();
 
         // FAB
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Proceed with creation of new AssociatedUser
-                Intent intent = new Intent(UsersListActivity.this, UsersEditorActivity.class);
-                intent.putExtra(ACTIVITY_REQUEST_TYPE, NEW_USER);
-                intent.putExtra(PASSPHRASE, passphrase);
-                startActivity(intent);
+                createNewUser();
             }
         });
 
@@ -153,10 +153,19 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
         if (activityRequestType.equals(PICK_USER)) {
             fab.setVisibility(View.GONE);
         }
+
+        initToolbars();
+    }
+
+    private void createNewUser(){
+        Intent intent = new Intent(UsersListActivity.this, UsersEditorActivity.class);
+        intent.putExtra(ACTIVITY_REQUEST_TYPE, NEW_USER);
+        intent.putExtra(PASSPHRASE, passphrase);
+        startActivity(intent);
     }
 
     /**
-     * Edit the Toolbars
+     * Edit the Toolbars.
      */
     private void initToolbars() {
         // Toolbar TOP
@@ -220,5 +229,12 @@ public class UsersListActivity extends AppCompatActivity implements MyAlertDialo
             UsersListFragment frag = (UsersListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
             frag.updateLayout(result);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        dbUtils.loadAssociatedUsers(passphrase);
     }
 }

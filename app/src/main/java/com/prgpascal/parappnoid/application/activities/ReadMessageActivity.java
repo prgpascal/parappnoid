@@ -22,56 +22,65 @@ package com.prgpascal.parappnoid.application.activities;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.fragments.ReadMessageFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
-import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.model.OneTimePad;
+import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.utils.MyUtils;
-import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
-import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.*;
-import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.MESSAGE_URI_PREFIX;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.PADS_LENGTH;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.PAD_ID_LENGTH;
+import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.ACTIVITY_REQUEST_TYPE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.PICK_USER;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.PICK_USER_REQUEST_CODE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.REPLY_MESSAGE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELECTED_USER;
 
 /**
  * Activity instantiated when a message arrived and must be decrypted.
  */
-public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DBResponseListener {
+public class ReadMessageActivity extends AppCompatActivity implements
+        DBUtils.DBResponseListener {
+
     private String hexCiphertext;               // Original incoming message (HEX String).
     private String plaintext;                   // The plaintext
-    private TextView contentTextView;           // TextView for message content.
     private AssociatedUser selectedUser;        // The selected AssociatedUser.
     private char[] passphrase;                  // Passphrase inserted by the user.
     private DBUtils dbUtils;                    // Object used for DB operations.
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Instantiate the DBUtils object
-        dbUtils = DBUtils.getNewInstance(ReadMessageActivity.this);
+        dbUtils = DBUtils.getNewInstance(ReadMessageActivity.this); //TODO singleton
 
         // Check the Intent Action.
         // It must be an ACTION_VIEW.
-        Intent intent = getIntent();
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+        if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
 
             // Get the HEX ciphertext.
             // discard the prefix...
-            hexCiphertext = intent.getDataString().substring(MESSAGE_URI_PREFIX.length());
+            hexCiphertext = getIntent().getDataString().substring(MESSAGE_URI_PREFIX.length());
 
             // Pick the AssociatedUser to be used.
-            intent = new Intent(ReadMessageActivity.this, UsersListActivity.class);
+            Intent intent = new Intent(ReadMessageActivity.this, UsersListActivity.class);
             intent.putExtra(ACTIVITY_REQUEST_TYPE, PICK_USER);
             startActivityForResult(intent, PICK_USER_REQUEST_CODE);
 
@@ -83,21 +92,13 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
         }
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == PICK_USER_REQUEST_CODE) {
-            // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                // Read the associated user and passphrase
                 selectedUser = data.getParcelableExtra(SELECTED_USER);
                 passphrase = data.getCharArrayExtra(PASSPHRASE);
-
-                // At this point we have the HEX ciphertext and the right AssociatedUser.
-                // We also have all the passphrase to access the DB.
-                // Proceed creating the layout.
                 createLayout();
 
                 // Let's try the decryption.
@@ -112,23 +113,23 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
         }
     }
 
+    /**
+     * Create the layout
+     */
+    private void createLayout() {
+        setContentView(R.layout.activity_toolbar_top_bottom);
 
+        Fragment fragment = ReadMessageFragment.newInstance();
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, fragment);
+        trans.commit();
 
-    /** Create the layout */
-    private void createLayout(){
-        // Set the layout
-        setContentView(R.layout.read_message);
-
-        // Toolbars
         initToolbars();
-
-        // Message content TextView
-        contentTextView = (TextView)findViewById(R.id.messageContent);
     }
 
-
-
-    /** Edit the Toolbars */
+    /**
+     * Edit the Toolbars
+     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -143,13 +144,12 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
             if (child != null)
                 if (child.getClass() == ImageView.class) {
                     ImageView iv2 = (ImageView) child;
-                    if ( iv2.getDrawable() == avatar ) {
+                    if (iv2.getDrawable() == avatar) {
                         iv2.setAdjustViewBounds(true);
                         iv2.setPadding(15, 15, 15, 15);
                     }
                 }
         }
-
 
         // Toolbar BOTTOM
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.bottomToolbar);
@@ -159,15 +159,7 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.reply:
-                        // Want to write a reply to this user.
-                        // Pass as parameters the selected user and the passphrase.
-                        // So it's not needed to request them to the user again.
-                        Intent intent = new Intent(ReadMessageActivity.this, WriteMessageActivity.class);
-                        intent.putExtra(ACTIVITY_REQUEST_TYPE, REPLY_MESSAGE);
-                        intent.putExtra(SELECTED_USER, selectedUser);
-                        intent.putExtra(PASSPHRASE, passphrase);
-                        startActivity(intent);
-                        finish();
+                        replayToMessage();
                         break;
                 }
                 return true;
@@ -175,11 +167,22 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
         });
     }
 
-
+    private void replayToMessage() {
+        // Want to write a reply to this user.
+        // Pass as parameters the selected user and the passphrase.
+        // So it's not needed to request them to the user again.
+        //TODO make javadoc
+        Intent intent = new Intent(ReadMessageActivity.this, WriteMessageActivity.class);
+        intent.putExtra(ACTIVITY_REQUEST_TYPE, REPLY_MESSAGE);
+        intent.putExtra(SELECTED_USER, selectedUser);
+        intent.putExtra(PASSPHRASE, passphrase);
+        startActivity(intent);
+        finish();
+    }
 
     /**
      * Check if the message length is correct.
-     *
+     * <p/>
      * If the length of the message is different from expected, false is returned.
      * Expected length = (PAD_ID_LENGTH + PADS_LENGTH) * 2.
      * The message is encoded in HEX (i.e. 2 characters per byte).
@@ -187,34 +190,29 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
      * @param message the HEX ciphertext input message.
      * @return true or false if the message length is correct or not.
      */
-    private boolean checkMessageLength(String message){
-        if (message.length() != (PAD_ID_LENGTH + PADS_LENGTH)*2){
-            return false;
-        }
-        return true;
+    private boolean checkMessageLength(String message) {
+        return (message.length() == (PAD_ID_LENGTH + PADS_LENGTH) * 2);
     }
-
-
 
     /**
      * Try the decryption of the message.
-     *
-     *  padID                   =  identifier of the OneTimePad key used.
-     *  plaintext               =  the user plaintext to be sent.
-     *  plaintextWithPadding    =  plaintext + some random padding bytes.
-     *  plaintextLength         =  number of bytes of the plaintext.
-     *  Kp                      =  OTP key used for the plaintext encryption.
-     *  Km                      =  OTP key used for the MAC calculation.
-     *  P                       =  Temporary part.
-     *  C                       =  ciphertext.
-     *  MAC                     =  Message authentication code.
-     *  HEX(...)                =  HEX string representation.
-     *
-     *  P =                  (plaintext || padding || plaintextLength)      [101 bytes]
-     *  C =                  (P XOR Kp)                                     [101 bytes]
-     *  MAC =                SHA-256(Km || padID || C)                      [32 bytes]
-     *  Message =            (padID || C || MAC)                            [135 bytes]
-     *  HEX Message =        HEX(Message)                                   [270 bytes]
+     * <p/>
+     * padID                   =  identifier of the OneTimePad key used.
+     * plaintext               =  the user plaintext to be sent.
+     * plaintextWithPadding    =  plaintext + some random padding bytes.
+     * plaintextLength         =  number of bytes of the plaintext.
+     * Kp                      =  OTP key used for the plaintext encryption.
+     * Km                      =  OTP key used for the MAC calculation.
+     * P                       =  Temporary part.
+     * C                       =  ciphertext.
+     * MAC                     =  Message authentication code.
+     * HEX(...)                =  HEX string representation.
+     * <p/>
+     * P =                  (plaintext || padding || plaintextLength)      [101 bytes]
+     * C =                  (P XOR Kp)                                     [101 bytes]
+     * MAC =                SHA-256(Km || padID || C)                      [32 bytes]
+     * Message =            (padID || C || MAC)                            [135 bytes]
+     * HEX Message =        HEX(Message)                                   [270 bytes]
      *
      * @param hexCiphertext the message to be decrypted.
      */
@@ -224,7 +222,7 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
         final int MAC = 2;
 
         // Check the message length.
-        if (!checkMessageLength(hexCiphertext)){
+        if (!checkMessageLength(hexCiphertext)) {
             // Message length is wrong.
             // Show an error message and return null.
             Toast.makeText(getApplicationContext(), R.string.error_message_length, Toast.LENGTH_SHORT).show();
@@ -267,7 +265,7 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
             String p = MyUtils.encryptOrDecrypt(message[C], Kp);
 
             // Plaintext with padding
-            String isoPlaintextLength = p.charAt(p.length()-1) + "";
+            String isoPlaintextLength = p.charAt(p.length() - 1) + "";
             int plaintextLength = MyUtils.encodeInt(isoPlaintextLength);
 
             String plaintext = p.substring(0, plaintextLength);
@@ -286,23 +284,27 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
         }
     }
 
-
-
     /**
      * A Database operation has finished.
      *
      * @param result success or failure of database operation.
      */
-    public void onDBResponse(boolean result){
-        if (result){
+    public void onDBResponse(boolean result) {
+        if (result) {
             // DB Operation OK
             // Show the decrypted message (or error) to the user.
-            contentTextView.append(plaintext);
+            ReadMessageInterface frag = (ReadMessageInterface) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            frag.setMesageContent(plaintext);
 
         } else {
             // DB Operation Error
-            contentTextView.append(getResources().getString(R.string.error));
+            ReadMessageInterface frag = (ReadMessageInterface) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            frag.setMesageContent(getResources().getString(R.string.error));
         }
+    }
+
+    public interface ReadMessageInterface {
+        void setMesageContent(String s);
     }
 
     /**
@@ -310,5 +312,6 @@ public class ReadMessageActivity extends AppCompatActivity implements DBUtils.DB
      *
      * @param result the ArrayList of associated users.
      */
-    public void onDBResponse(ArrayList<AssociatedUser> result){}
+    public void onDBResponse(ArrayList<AssociatedUser> result) {
+    }
 }

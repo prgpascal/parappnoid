@@ -20,17 +20,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Top toolbar -->
-    <include
-        android:id="@+id/toolbar_top"
-        layout="@layout/toolbar_top" />
-
-    <!-- Bottom toolbar -->
-    <include
-        android:id="@+id/toolbar_bottom"
-        layout="@layout/toolbar_bottom" />
-
-
     <!-- Username -->
     <TextView
         android:id="@+id/labelUsername"

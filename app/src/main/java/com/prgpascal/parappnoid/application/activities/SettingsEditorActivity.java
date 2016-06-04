@@ -20,70 +20,61 @@
 package com.prgpascal.parappnoid.application.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.fragments.MainFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
-import com.prgpascal.parappnoid.utils.MyUtils;
+import com.prgpascal.parappnoid.utils.DBUtils.DBResponseListener;
+
 import java.util.ArrayList;
-import com.prgpascal.parappnoid.utils.DBUtils.*;
 
 /**
  * Activity that allows the user to edit the DB settings.
  * Here the user can choose new values for the passphrase and/or the number of iterations used
  * by the KDF, implemented by SQLCipher.
  */
-public class DBSettingsEditorActivity extends AppCompatActivity implements DBResponseListener {
-    private EditText oldPassphraseEditText;         // EditText for the passphrase of current DB.
-    private EditText newPassphraseEditText;         // EditText for the passphrase of new DB.
-    private EditText newIterationsEditText;         // EditText for the number of iterations of new DB.
-    private DBUtils dbUtils;                        // Object used for DB operations.
+public class SettingsEditorActivity extends AppCompatActivity implements DBResponseListener {
+    private DBUtils dbUtils;                        // Object used for DB operations. //TODO singleton
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Instantiate the DBUtils object
-        dbUtils = DBUtils.getNewInstance(DBSettingsEditorActivity.this);
-
-        // Create the layout
+        dbUtils = DBUtils.getNewInstance(SettingsEditorActivity.this); //TODO singleton
         createLayout();
     }
 
+    /**
+     * Create the layout.
+     */
+    private void createLayout() {
+        setContentView(R.layout.activity_toolbar_top);
 
+        Fragment fragment = MainFragment.newInstance();
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, fragment);
+        trans.commit();
 
-    /** Create the layout */
-    private void createLayout(){
-        // Set the layout
-        setContentView(R.layout.db_settings_editor);
-
-        // Toolbars
         initToolbars();
-
-        // EditTexts
-        oldPassphraseEditText = (EditText)findViewById(R.id.oldPassphrase);
-        newPassphraseEditText = (EditText)findViewById(R.id.newPassphrase);
-        newIterationsEditText = (EditText)findViewById(R.id.newIterations);
     }
 
-
-
-    /** Edit the Toolbars */
+    /**
+     * Edit the Toolbars.
+     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setTitle(R.string.db_settings);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -103,52 +94,34 @@ public class DBSettingsEditorActivity extends AppCompatActivity implements DBRes
         return super.onOptionsItemSelected(item);
     }
 
-
-
-    /** Save the settings into DB */
-    private void saveDbSettings(){
-        // Get data from EditTexts
-        char[] oldPassphrase = getValueFromEditText(oldPassphraseEditText);
-        char[] newPassphrase = getValueFromEditText(newPassphraseEditText);
-        char[] newIterations = getValueFromEditText(newIterationsEditText);
-
-        // Check if the input is valid or not
-        if (MyUtils.isValid(oldPassphrase) &&
-                MyUtils.isValid(newPassphrase) &&
-                MyUtils.isValid(newIterations)) {
-
-            // Convert iterations to Integer value
+    /**
+     * Save the settings into DB
+     */
+    private void saveDbSettings() {
+        // Get the data from Fragments
+        try {
+            SettingsEditorInterface fragment = (SettingsEditorInterface) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            char[] oldPassphrase = fragment.getOldPassphrase();
+            char[] newPassphrase = fragment.getNewPassphrase();
+            char[] newIterations = fragment.getNewIterations();
             int newIterationsInt = Integer.valueOf(String.valueOf(newIterations));
 
             // Edit the DB Settings
             dbUtils.editDBSettings(oldPassphrase, newPassphrase, newIterationsInt);
 
-        } else {
+        } catch (WrongFieldException e) {
             // Wrong parameters
-            Toast.makeText(getApplicationContext(), R.string.error_wrong_input , Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.error_wrong_input, Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-    /** Get the text char sequence from an EditText. */
-    private char[] getValueFromEditText(EditText e){
-        Editable text = e.getText();
-        char[] value = new char[text.length()];
-        text.getChars(0, text.length(), value, 0);
-
-        return value;
-    }
-
-
 
     /**
      * A Database operation has finished.
      *
      * @param result success or failure of database operation.
      */
-    public void onDBResponse(boolean result){
-        if (result){
+    public void onDBResponse(boolean result) {
+        if (result) {
             // DB Operation OK
             // Show a confirm message and finish the Activity.
             Toast.makeText(getApplicationContext(), R.string.operation_ok, Toast.LENGTH_SHORT).show();
@@ -164,5 +137,19 @@ public class DBSettingsEditorActivity extends AppCompatActivity implements DBRes
      *
      * @param result the ArrayList of associated users.
      */
-    public void onDBResponse(ArrayList<AssociatedUser> result){}
+    public void onDBResponse(ArrayList<AssociatedUser> result) {
+        // Do nothing
+    }
+
+    public interface SettingsEditorInterface {
+        char[] getOldPassphrase() throws WrongFieldException;
+
+        char[] getNewPassphrase() throws WrongFieldException;
+
+        char[] getNewIterations() throws WrongFieldException;
+    }
+
+    public static class WrongFieldException extends Exception {
+        // Empty class
+    }
 }

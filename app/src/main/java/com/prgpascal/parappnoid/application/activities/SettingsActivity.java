@@ -19,19 +19,13 @@
 
 package com.prgpascal.parappnoid.application.activities;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.support.v7.app.AppCompatActivity;
 
 import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.utils.MyNotificationManager;
-import static com.prgpascal.parappnoid.utils.Constants.*;
+import com.prgpascal.parappnoid.application.fragments.SettingsFragment;
 
 /**
  * http://stackoverflow.com/questions/11380051/single-page-preferenceactivity-w-no-headers-fragments
@@ -42,55 +36,12 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Display the fragment as the main content
-        getFragmentManager().beginTransaction().replace(android.R.id.content,
-                new PrefsFragment()).commit();
+        setContentView(R.layout.activity);
+
+        Fragment fragment = SettingsFragment.newInstance();
+        FragmentTransaction trans = getFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, fragment);
+        trans.commit();
     }
 
-
-
-    /** My Custom PreferenceFragment */
-    public static class PrefsFragment extends PreferenceFragment {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Set the correct preferences name
-            PreferenceManager prefMgr = getPreferenceManager();
-            prefMgr.setSharedPreferencesName(PREFERENCES);
-            prefMgr.setSharedPreferencesMode(Activity.MODE_PRIVATE);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.user_preferences);
-        }
-
-
-        /** Capture the click events on Preference buttons */
-        public boolean onPreferenceTreeClick (PreferenceScreen preferenceScreen, Preference preference){
-
-            /** Show notifications */
-            if (preference.getKey().matches("show_notification")){
-                CheckBoxPreference pref = (CheckBoxPreference) preference;
-
-                if (pref.isChecked()){
-                    // Show the notification
-                    new MyNotificationManager(getActivity()).showNotification(true);
-
-                } else {
-                    // Stop showing the notification
-                    new MyNotificationManager(getActivity()).showNotification(false);
-                }
-            }
-
-            /** Edit DB settings */
-            if (preference.getKey().matches("edit_DB")){
-                Intent intent = new Intent(getActivity(), DBSettingsEditorActivity.class);
-                startActivity(intent);
-                getActivity().finish();
-            }
-
-            return true;
-        }
-    }
 }  

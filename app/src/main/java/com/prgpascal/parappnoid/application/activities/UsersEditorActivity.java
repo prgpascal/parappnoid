@@ -42,24 +42,35 @@ import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.adapters.AvatarImageAdapter;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.model.OneTimePad;
-import com.prgpascal.parappnoid.utils.*;
-import com.prgpascal.parappnoid.utils.MyAlertDialogs.*;
+import com.prgpascal.parappnoid.utils.DBUtils;
+import com.prgpascal.parappnoid.utils.MyAlertDialogs.MyAlertDialogFragment;
+import com.prgpascal.parappnoid.utils.MyAlertDialogs.MyAlertDialogInterface;
+import com.prgpascal.parappnoid.utils.MyUtils;
 import com.prgpascal.qrdatatransfer.TransferActivity;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.*;
-import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
-import static com.prgpascal.parappnoid.utils.Constants.KeyExchangeConstants.*;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.PADS_LENGTH;
+import static com.prgpascal.parappnoid.utils.Constants.KeyExchangeConstants.I_AM_THE_SERVER;
+import static com.prgpascal.parappnoid.utils.Constants.KeyExchangeConstants.KEY_EXCHANGE_REQUEST_CODE;
+import static com.prgpascal.parappnoid.utils.Constants.KeyExchangeConstants.MESSAGES;
 import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
 import static com.prgpascal.parappnoid.utils.Constants.TAG_DIALOG;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.ACTIVITY_REQUEST_TYPE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.EDIT_USERS;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.NEW_USER;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELECTED_USER;
 
 /**
- * Activity that allows the creation of new AssociatedUsers or the modification of an existing one.
+ * Activity that allows the creation of new AssociatedUsers or the editing of an existing one.
  */
-public class UsersEditorActivity extends AppCompatActivity implements MyAlertDialogInterface, DBUtils.DBResponseListener {
+public class UsersEditorActivity extends AppCompatActivity implements
+        MyAlertDialogInterface,
+        DBUtils.DBResponseListener {
+
     private HashMap<Integer, OneTimePad> keys;      // Array of generated keys of the specified user
-    private ArrayList<String> groupsOfKeys;         // Generated keys grouped in Strings and stored inside an ArrayList
+    private ArrayList<String> groupsOfKeys;         // Generated keys grouped in Strings
 
     private EditText usernameEditText;              // EditText for username input
     private ImageView avatarImageView;              // ImageView for Avatar selection
@@ -137,7 +148,7 @@ public class UsersEditorActivity extends AppCompatActivity implements MyAlertDia
     /** Create the layout */
     private void createLayout() {
         // Set the layout
-        setContentView(R.layout.users_editor);
+        setContentView(R.layout.activity_toolbar_top);
 
         // Toolbars
         initToolbars();

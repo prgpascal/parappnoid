@@ -25,48 +25,20 @@
         android:id="@+id/toolbar_top"
         layout="@layout/toolbar_top" />
 
-    <!-- Bottom toolbar -->
-    <include
-        android:id="@+id/toolbar_bottom"
-        layout="@layout/toolbar_bottom" />
-
-    <!-- Message Content -->
-    <EditText
-        android:id="@+id/messageContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar_top"
-        android:gravity="clip_horizontal"
-        android:hint="@string/type_text"
-        android:textColor="#000"/>
-
-    <!-- Message length counter -->
-    <TextView
-        android:id="@+id/messageLengthCounter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/toolbar_bottom"
-        android:layout_alignParentRight="true"
-        android:padding="5dp"
-        android:textSize="15dp"
-        android:text=""
-        android:textColor="#000"/>
-
-
-    <!-- Riempitivo -->
-    <!-- TMP, basta eliminare la textview dentro la ScrollView e
-    e lasciare la ScrollView -->
-    <ScrollView
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/messageContent"
-        android:layout_above="@id/toolbar_bottom">
+        android:layout_below="@id/toolbar_top"/>
 
-        <TextView
-            android:id="@+id/output"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </ScrollView>
+    <!-- FAB: Floating Action Button -->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:src="@android:drawable/ic_input_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/fab_margin"/>
 
 </RelativeLayout>

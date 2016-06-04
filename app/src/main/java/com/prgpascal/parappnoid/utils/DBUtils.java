@@ -25,20 +25,34 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+
+import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.model.AssociatedUser;
+import com.prgpascal.parappnoid.model.OneTimePad;
+
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabaseHook;
 import net.sqlcipher.database.SQLiteException;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.*;
-import static com.prgpascal.parappnoid.utils.Constants.*;
-
-import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.model.AssociatedUser;
-import com.prgpascal.parappnoid.model.OneTimePad;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.DB_NAME;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.DEFAULT_DB_NAME;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.DEFAULT_ITERATIONS;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.ITERATIONS;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.KEY_AVATAR;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.KEY_KEY_FOR_MAC;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.KEY_KEY_FOR_PLAINTEXT;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.KEY_PAD_ID;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.KEY_USERNAME;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.KEY_USER_ID;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.TABLE_DECRYPTION_KEYS;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.TABLE_ENCRYPTION_KEYS;
+import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.TABLE_USERS;
+import static com.prgpascal.parappnoid.utils.Constants.PREFERENCES;
 
 /**
  * Class that performs all the DB operations.

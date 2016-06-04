@@ -19,7 +19,6 @@
 
 package com.prgpascal.parappnoid.application.adapters;
 
-import java.util.ArrayList;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -32,7 +31,10 @@ import android.widget.TextView;
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.activities.UsersListActivity;
 import com.prgpascal.parappnoid.model.AssociatedUser;
-import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
+
+import java.util.ArrayList;
+
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.PICK_USER;
 
 /**
  * Adapter for the RecyclerView, used for showing the associated users.

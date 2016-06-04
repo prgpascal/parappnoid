@@ -19,8 +19,6 @@
 
 package com.prgpascal.parappnoid.application.fragments;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,14 +26,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.adapters.RecyclerViewAdapter;
 import com.prgpascal.parappnoid.model.AssociatedUser;
-import com.prgpascal.parappnoid.utils.DBUtils;
 
-import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
+import java.util.ArrayList;
 
 /**
  * Fragment that contains the list of associated users.
@@ -45,9 +41,9 @@ public class UsersListFragment extends Fragment {
     private RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> mAdapter;	// RecyclerView Adapter
     private RecyclerView.LayoutManager mLayoutManager;						// RecyclerView LayoutManager
 
-	private char[] passphrase;                   							// Passphrase inserted by the user
-	private DBUtils dbUtils;                        						// Object used for DB operations
-
+	public static UsersListFragment newInstance() {
+		return new UsersListFragment();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,7 +53,7 @@ public class UsersListFragment extends Fragment {
 		}
 
 		// Inflate the layout
-		View rootView = inflater.inflate(R.layout.users_list_fragment, container, false);
+		View rootView = inflater.inflate(R.layout.fragment_users_list, container, false);
 		
 		// RecyclerView (Defined here because of an Android SDK bug)
 		mRecyclerView = (RecyclerView) rootView.findViewById(R.id.parent);
@@ -67,44 +63,6 @@ public class UsersListFragment extends Fragment {
 
         return rootView; 
 	}
-   
-
-
-    /** Called when the Activity is created: define the Views here */
-	public void onActivityCreated(Bundle savedInstanceState){
-		super.onActivityCreated(savedInstanceState);
-
-		// Check and get all the bundle parameters.
-		// If a parameter is missing, show an error and finish the activity.
-		Bundle b = getArguments();
-		if (b.containsKey(PASSPHRASE)){
-
-			// Parameters OK, read them all!
-			passphrase = b.getCharArray(PASSPHRASE);
-
-			// Instantiate the DBUtils object
-			dbUtils = DBUtils.getNewInstance(getActivity());
-
-		} else {
-			// One or more parameters are missing!
-			// Show an error message and finish the activity
-			Toast.makeText(getContext(), R.string.error_missing_params, Toast.LENGTH_SHORT).show();
-			getActivity().finish();
-		}
-	}
-
-
-
-	@Override
-	public void onStart(){
-		super.onStart();
-
-		// Read the updated UsersList on each onStart() method call
-		if (dbUtils != null) {
-			dbUtils.loadAssociatedUsers(passphrase);
-		}
-	}
-
 
 	public void updateLayout(ArrayList<AssociatedUser> users){
 		// RecyclerView Adapter

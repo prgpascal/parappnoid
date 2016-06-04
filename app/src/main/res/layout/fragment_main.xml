@@ -20,26 +20,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Top toolbar -->
-    <include
-        android:id="@+id/toolbar_top"
-        layout="@layout/toolbar_top" />
 
-   	<!-- FRAGMENT -->
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_top"/>
+    <!-- Write new message -->
+    <Button
+        android:id="@id/write_message_btn"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:text="@string/write_message"/>
 
-    <!-- FAB: Floating Action Button -->
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:src="@android:drawable/ic_input_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="@dimen/fab_margin"/>
+
+    <!-- Edit Users -->
+    <Button
+        android:id="@id/contacts_btn"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/write_message_btn"
+        android:text="@string/users"/>
+
+
+    <!-- Settings -->
+    <Button
+        android:id="@id/read_message_btn"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/contacts_btn"
+        android:text="@string/settings"/>
+
 
 </RelativeLayout>

@@ -20,11 +20,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Top toolbar -->
-    <include
-        android:id="@+id/toolbar_top"
-        layout="@layout/toolbar_top" />
-
     <!-- Old Passphrase -->
     <TextView
         android:id="@+id/labelOldPassphrase"

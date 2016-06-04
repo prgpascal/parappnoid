@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="write_message_btn" type="id"/>
+    <item name="read_message_btn" type="id"/>
+    <item name="contacts_btn" type="id"/>
+</resources>

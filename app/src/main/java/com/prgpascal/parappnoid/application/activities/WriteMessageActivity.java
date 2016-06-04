@@ -22,40 +22,43 @@ package com.prgpascal.parappnoid.application.activities;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.fragments.WriteMessageFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
-import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.model.OneTimePad;
+import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.utils.MyUtils;
-
-import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.*;
-import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
-import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.MESSAGE_URI_PREFIX;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.PLAINTEXT_LENGTH;
+import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.ACTIVITY_REQUEST_TYPE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.NEW_MESSAGE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.PICK_USER;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.PICK_USER_REQUEST_CODE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.REPLY_MESSAGE;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELECTED_USER;
+
 /**
  * Activity that allows the user to write and send a new encrypted message to a specified AssociatedUser.
  */
 public class WriteMessageActivity extends AppCompatActivity implements DBUtils.DBResponseListener {
-    private EditText contentEditText;           // The EditText for the message content.
-    private TextView contentLengthCounter;      // TextView that shows the length of message.
     private AssociatedUser selectedUser;        // The selected AssociatedUser.
-    public String activityRequestType;          // The type of request for this activity.
+    public String activityRequestType;          // The type of request for this Activity.
     private char[] passphrase;                  // Passphrase inserted by the user.
     private DBUtils dbUtils;                    // Object used for DB operations.
     private String hexCiphertext;               // HEX version of the ciphertext.
@@ -65,22 +68,21 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         super.onCreate(savedInstanceState);
 
         // Instantiate the DBUtils object
-        dbUtils = DBUtils.getNewInstance(WriteMessageActivity.this);
+        dbUtils = DBUtils.getNewInstance(WriteMessageActivity.this); //TODO singleton
 
-        // Check and get all the Intent parameters.
+        // Get the Intent parameters.
         if (getIntent().hasExtra(ACTIVITY_REQUEST_TYPE) && getIntent().hasExtra(PASSPHRASE)) {
             activityRequestType = getIntent().getStringExtra(ACTIVITY_REQUEST_TYPE);
             passphrase = getIntent().getCharArrayExtra(PASSPHRASE);
 
             if (activityRequestType.equals(REPLY_MESSAGE)) {
-                // Reply to a message
                 if (getIntent().hasExtra(SELECTED_USER)) {
                     selectedUser = getIntent().getParcelableExtra(SELECTED_USER);
                     createLayout();
 
                 } else {
                     // One or more parameters are missing!
-                    // Show an error message and finish the activity
+                    // Show an error message and finish the Activity.
                     Toast.makeText(getApplicationContext(), R.string.error_missing_params, Toast.LENGTH_SHORT).show();
                     finish();
                 }
@@ -94,14 +96,14 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
 
             } else {
                 // Activity request type not available.
-                // Show an error message and finish the activity
+                // Show an error message and finish the Activity.
                 Toast.makeText(getApplicationContext(), R.string.error_wrong_request_type, Toast.LENGTH_SHORT).show();
                 finish();
             }
 
         } else {
             // One or more parameters are missing!
-            // Show an error message and finish the activity
+            // Show an error message and finish the Activity.
             Toast.makeText(getApplicationContext(), R.string.error_missing_params, Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -111,14 +113,9 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == PICK_USER_REQUEST_CODE) {
-            // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                // Read the associated user and passphrase
                 selectedUser = data.getParcelableExtra(SELECTED_USER);
                 passphrase = data.getCharArrayExtra(PASSPHRASE);
-
-                // At this point the correct AssociatedUser to be used is selected.
-                // Proceed with layout creation.
                 createLayout();
 
             } else {
@@ -130,36 +127,23 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         }
     }
 
-    /** Create the layout */
+    /**
+     * Create the layout.
+     */
     private void createLayout() {
-        // Set the layout
-        setContentView(R.layout.write_message);
+        setContentView(R.layout.activity_toolbar_top_bottom);
 
-        // Toolbars
+        Fragment fragment = WriteMessageFragment.newInstance();
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, fragment);
+        trans.commit();
+
         initToolbars();
-
-        // Content length Counter
-        contentLengthCounter = (TextView) findViewById(R.id.messageLengthCounter);
-
-        // Message content EditText
-        contentEditText = (EditText) findViewById(R.id.messageContent);
-        contentEditText.addTextChangedListener(new TextWatcher(){
-            public void afterTextChanged(Editable s) {
-                if (s.length() > PLAINTEXT_LENGTH-1){
-                    contentLengthCounter.setTextColor(ContextCompat.getColor(WriteMessageActivity.this, R.color.red));
-                } else {
-                    contentLengthCounter.setTextColor(ContextCompat.getColor(WriteMessageActivity.this, R.color.black));
-                }
-
-                // Update the characters count
-                contentLengthCounter.setText(s.length() + " / " + (PLAINTEXT_LENGTH-1));
-            }
-            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
-            public void onTextChanged(CharSequence s, int start, int before, int count){}
-        });
     }
 
-    /** Edit the Toolbars */
+    /**
+     * Edit the Toolbars.
+     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -167,7 +151,7 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         getSupportActionBar().setTitle(selectedUser.getUsername());
         getSupportActionBar().setSubtitle(
                 getResources().getString(R.string.keys_available) +
-                selectedUser.getEncryptionKeys().size());
+                        selectedUser.getEncryptionKeys().size());
 
         // Avatar
         Drawable avatar = ContextCompat.getDrawable(getApplicationContext(), selectedUser.getAvatar());
@@ -177,7 +161,7 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
             if (child != null)
                 if (child.getClass() == ImageView.class) {
                     ImageView iv2 = (ImageView) child;
-                    if ( iv2.getDrawable() == avatar ) {
+                    if (iv2.getDrawable() == avatar) {
                         iv2.setAdjustViewBounds(true);
                         iv2.setPadding(15, 15, 15, 15);
                     }
@@ -192,17 +176,7 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.send:
-                        // Send button clicked
-                        // Try the encryption of plaintext if it's valid.
-                        String plaintext = contentEditText.getText().toString();
-                        if (isValid(plaintext)) {
-                            hexCiphertext = tryEncryption(plaintext, selectedUser);
-
-                        } else {
-                            // Message is not valid!
-                            // Show an error message
-                            Toast.makeText(getApplicationContext(), R.string.error_message_invalid, Toast.LENGTH_SHORT).show();
-                        }
+                        sendMessage();
                         break;
                 }
                 return true;
@@ -211,37 +185,48 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
     }
 
     /**
-     * Check if the plaintext is valid.
-     * (i.e. not null, doesn't start with " " and its length is < than the maximum available)
-     *
-     * @param plaintext the plaintext to be evaluated.
-     * @return boolean value representing if it is valid or not.
+     * Method called when a message must be sent.
      */
-    private boolean isValid(String plaintext){
-        return ( MyUtils.isValid(plaintext) && (plaintext.length() < PLAINTEXT_LENGTH) );
+    private void sendMessage() {
+        WriteMessageInterface frag = (WriteMessageInterface) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        try {
+            String plaintext = frag.getMessageContent();
+            hexCiphertext = tryEncryption(plaintext, selectedUser);
+        } catch (InvalidMessage e) {
+            Toast.makeText(getApplicationContext(), R.string.error_message_invalid, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public interface WriteMessageInterface {
+        String getMessageContent() throws InvalidMessage;
+    }
+
+    //TODO unifica le eccezioni in un'unica ecezzione?
+    public static class InvalidMessage extends Exception {
+        // Empty class
     }
 
     /**
      * Try the encryption of the plaintext message.
+     * <p/>
+     * padID                   =  identifier of the OneTimePad key used.
+     * plaintext               =  the user plaintext to be sent.
+     * plaintextWithPadding    =  plaintext + some random padding bytes.
+     * plaintextLength         =  number of bytes of the plaintext.
+     * Kp                      =  OTP key used for the plaintext encryption.
+     * Km                      =  OTP key used for the MAC calculation.
+     * P                       =  Temporary part.
+     * C                       =  ciphertext.
+     * MAC                     =  Message authentication code.
+     * HEX(...)                =  HEX string representation.
+     * <p/>
+     * P =                  (plaintext || padding || plaintextLength)      [101 bytes]
+     * C =                  (P XOR Kp)                                     [101 bytes]
+     * MAC =                SHA-256(Km || padID || C)                      [32 bytes]
+     * Message =            (padID || C || MAC)                            [135 bytes]
+     * HEX Message =        HEX(Message)                                   [270 bytes]
      *
-     *  padID                   =  identifier of the OneTimePad key used.
-     *  plaintext               =  the user plaintext to be sent.
-     *  plaintextWithPadding    =  plaintext + some random padding bytes.
-     *  plaintextLength         =  number of bytes of the plaintext.
-     *  Kp                      =  OTP key used for the plaintext encryption.
-     *  Km                      =  OTP key used for the MAC calculation.
-     *  P                       =  Temporary part.
-     *  C                       =  ciphertext.
-     *  MAC                     =  Message authentication code.
-     *  HEX(...)                =  HEX string representation.
-     *
-     *  P =                  (plaintext || padding || plaintextLength)      [101 bytes]
-     *  C =                  (P XOR Kp)                                     [101 bytes]
-     *  MAC =                SHA-256(Km || padID || C)                      [32 bytes]
-     *  Message =            (padID || C || MAC)                            [135 bytes]
-     *  HEX Message =        HEX(Message)                                   [270 bytes]
-     *
-     * @param plaintext the message to be encrypted.
+     * @param plaintext    the message to be encrypted.
      * @param selectedUser the recipient of the message.
      */
     private String tryEncryption(String plaintext, AssociatedUser selectedUser) {
@@ -256,7 +241,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
             Toast.makeText(getApplicationContext(), R.string.error_no_keys, Toast.LENGTH_SHORT).show();
             return null;
         }
-
 
         // Get the first available key
         Map.Entry<Integer, OneTimePad> entry = keys.entrySet().iterator().next();
@@ -292,7 +276,6 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         // HEX Message
         String hexMessage = MyUtils.encodeHEX(message);
 
-
         // Important!
         // The key must be deleted BEFORE the message delivery.
         // If the deletion fails, return null and the message will not be send.
@@ -307,14 +290,15 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
      *
      * @param result success or failure of database operation.
      */
-    public void onDBResponse(boolean result){
+    public void onDBResponse(boolean result) {
         if (result) {
             // DB Operation OK
             if (hexCiphertext != null) {
                 // Message correctly encrypted!
-                // Re-create the layout, because the key used has been deleted
+                // Re-create the layout, because the used key has been deleted.
                 createLayout();
-                // The message is in the HEX format, send it.
+
+                // The message is already in the HEX format, send it.
                 Intent intent = new Intent(Intent.ACTION_SEND)
                         .putExtra(Intent.EXTRA_TEXT, MESSAGE_URI_PREFIX + hexCiphertext)
                         .setType("text/plain");
@@ -333,5 +317,7 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
      *
      * @param result the ArrayList of associated users.
      */
-    public void onDBResponse(ArrayList<AssociatedUser> result){}
+    public void onDBResponse(ArrayList<AssociatedUser> result) {
+        // Do nothing
+    }
 }

@@ -20,31 +20,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <!-- Write new message -->
-    <Button
-        android:id="@+id/writeMessageButton"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:text="@string/write_message"/>
-
-
-    <!-- Edit Users -->
-    <Button
-        android:id="@+id/editUsersButton"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_below="@id/writeMessageButton"
-        android:text="@string/users"/>
-
-
-    <!-- Settings -->
-    <Button
-        android:id="@+id/editDatabaseButton"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_below="@id/editUsersButton"
-        android:text="@string/settings"/>
-
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

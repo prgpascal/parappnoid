@@ -26,6 +26,7 @@ import com.prgpascal.parappnoid.model.OneTimePad;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,8 +39,13 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.*;
+
 import static com.prgpascal.parappnoid.utils.Constants.DEBUG_TAG;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.MAX_PAD_ID;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.PADS_LENGTH;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.PAD_ID_LENGTH;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.PLAINTEXT_LENGTH;
+import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConstants.PURPOSE_LENGTH;
 
 /**
  * Class that provides some useful methods.

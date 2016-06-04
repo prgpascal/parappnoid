@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 
@@ -31,7 +32,7 @@ public class LoginFragment extends Fragment {
             return null;
         }
 
-        View rootView = inflater.inflate(R.layout.new_frag_login, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
         logoImage = (ImageView) rootView.findViewById(R.id.logo);
         passphraseEditText = (EditText) rootView.findViewById(R.id.passphrase_edit_text);
@@ -44,17 +45,28 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Get the passphrase
-                Editable sequence = passphraseEditText.getText();
-                char[] passphrase = new char[sequence.length()];
-                sequence.getChars(0, sequence.length(), passphrase, 0);
+        loginButton.setOnClickListener(new MyOnClickListener());
+    }
 
-                ((LoginFragmentInterface) getActivity()).loginButtonClicked(passphrase);
-            }
-        });
+    class MyOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            // Get the passphrase
+            Editable sequence = passphraseEditText.getText();
+            char[] passphrase = new char[sequence.length()];
+            sequence.getChars(0, sequence.length(), passphrase, 0);
+
+            ((LoginFragmentInterface) getActivity()).loginButtonClicked(passphrase);
+        }
+    }
+
+    /**
+     * Called when the user has inserted the wrong passphrase.
+     */
+    public void wrongPassphraseInserted() {
+        Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).show();
+        //TODO show animation
+
     }
 
     public interface LoginFragmentInterface {

@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.prgpascal.parappnoid" >
 
-    <uses-sdk android:minSdkVersion="14" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -77,7 +76,7 @@
         </activity>
 
         <activity
-            android:name=".application.activities.DBSettingsEditorActivity"
+            android:name=".application.activities.SettingsEditorActivity"
             android:launchMode="singleTop">
         </activity>
 
