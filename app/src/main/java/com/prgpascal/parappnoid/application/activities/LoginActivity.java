@@ -9,17 +9,16 @@ import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.LoginFragment;
-import com.prgpascal.parappnoid.application.fragments.UsersListFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.Constants;
 import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.utils.MyProgressDialogManager;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
 /**
  * Activity that allows the user to insert the passphrase.
+ * When the correct passphrase is inserted, the user can proceed with the other Activities.
  */
 public class LoginActivity extends AppCompatActivity implements
         LoginFragment.LoginFragmentInterface,
@@ -34,7 +33,6 @@ public class LoginActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         dbUtils = DBUtils.getInstance(getApplicationContext());
-
         createLayout();
     }
 
@@ -50,20 +48,22 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void loginButtonClicked(char[] passphrase) {
         this.passphrase = passphrase;
+
         progressDialog.showProgressDialog(true, this);
         dbUtils.performLogin(passphrase, this);
     }
 
+    /**
+     * A Database operation has finished.
+     *
+     * @param result {@code true} if the operation ended with success, {@code false} otherwise.
+     */
     public void onDBResponse(boolean result) {
         progressDialog.showProgressDialog(false, this);
         if (result) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra(Constants.PASSPHRASE, passphrase);
             startActivity(intent);
-
-            //TODO rivedi se questo da errori o meno.
-            dbUtils.eraseCharArray(passphrase);
-
             finish();
 
         } else {

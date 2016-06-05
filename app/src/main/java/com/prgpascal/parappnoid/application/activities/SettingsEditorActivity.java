@@ -39,12 +39,12 @@ import java.util.ArrayList;
 /**
  * Activity that allows the user to edit the DB settings.
  * Here the user can choose new values for the passphrase and/or the number of iterations used
- * by the KDF, implemented by SQLCipher.
+ * by the KDF implemented by SQLCipher.
  */
 public class SettingsEditorActivity extends AppCompatActivity implements
         DBUtils.DbResponseCallback {
 
-    private DBUtils dbUtils;                        // Object used for DB operations. //TODO singleton
+    private DBUtils dbUtils;
     private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
 
     @Override
@@ -55,9 +55,6 @@ public class SettingsEditorActivity extends AppCompatActivity implements
         createLayout();
     }
 
-    /**
-     * Create the layout.
-     */
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top);
 
@@ -69,9 +66,6 @@ public class SettingsEditorActivity extends AppCompatActivity implements
         initToolbars();
     }
 
-    /**
-     * Edit the Toolbars.
-     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -97,9 +91,6 @@ public class SettingsEditorActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Save the settings into DB
-     */
     private void saveDbSettings() {
         // Get the data from Fragments
         try {
@@ -122,7 +113,7 @@ public class SettingsEditorActivity extends AppCompatActivity implements
     /**
      * A Database operation has finished.
      *
-     * @param result success or failure of database operation.
+     * @param result {@code true} if the operation ended with success, {@code false} otherwise.
      */
     public void onDBResponse(boolean result) {
         progressDialog.showProgressDialog(false, this);

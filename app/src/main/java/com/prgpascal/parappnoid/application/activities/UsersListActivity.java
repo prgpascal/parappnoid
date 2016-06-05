@@ -32,7 +32,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.application.fragments.MainFragment;
 import com.prgpascal.parappnoid.application.fragments.UsersListFragment;
 import com.prgpascal.parappnoid.application.fragments.dialogs.MyAlertDialogInterface;
 import com.prgpascal.parappnoid.application.fragments.dialogs.PassphraseDialogFragment;
@@ -93,9 +92,7 @@ public class UsersListActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Show new dialog.
-     */
+    @Override
     public void showNewDialog(int dialogType) {
         switch (dialogType) {
             case DIALOG_TYPE_REQUEST_PASSPHRASE:
@@ -109,9 +106,7 @@ public class UsersListActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * A positive button has been clicked.
-     */
+    @Override
     public void doPositiveClick(int dialogType, char[] result) {
         switch (dialogType) {
             case DIALOG_TYPE_REQUEST_PASSPHRASE:
@@ -120,19 +115,12 @@ public class UsersListActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * A negative button has been clicked.
-     */
+    @Override
     public void doNegativeClick(int dialogType, char[] result) {
-        // The user canceled the passphrase input.
-        // Show an error message than finish the Activity.
         Toast.makeText(getApplicationContext(), R.string.error_operation_cancelled, Toast.LENGTH_SHORT).show();
         finish();
     }
 
-    /**
-     * Create the layout.
-     */
     private void createLayout() {
         // Set the layout
         setContentView(R.layout.activity_toolbar_top);
@@ -166,9 +154,6 @@ public class UsersListActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
-    /**
-     * Edit the Toolbars.
-     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -208,7 +193,7 @@ public class UsersListActivity extends AppCompatActivity implements
     /**
      * A Database operation has finished.
      *
-     * @param result success or failure of database operation.
+     * @param result {@code true} if the operation ended with success, {@code false} otherwise.
      */
     public void onDBResponse(boolean result) {
         progressDialog.showProgressDialog(false, this);

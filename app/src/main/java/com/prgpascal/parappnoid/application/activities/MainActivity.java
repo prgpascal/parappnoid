@@ -31,7 +31,6 @@ import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.MainFragment;
-import com.prgpascal.parappnoid.utils.MyNotificationManager;
 
 import static com.prgpascal.parappnoid.utils.Constants.PASSPHRASE;
 import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.ACTIVITY_REQUEST_TYPE;
@@ -40,6 +39,7 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.NEW_
 
 /**
  * Main Activity.
+ * It allows the user to read/write messages, access to App settings and edit the contacts list.
  */
 public class MainActivity extends AppCompatActivity implements
         MainFragment.MainFragmentInterface {
@@ -50,22 +50,19 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Check and get all the Intent parameters.
+        // Get the Intent parameters.
         if (getIntent().hasExtra(PASSPHRASE)) {
             passphrase = getIntent().getCharArrayExtra(PASSPHRASE);
             createLayout();
 
         } else {
             // One or more parameters are missing!
-            // Show an error message and finish the activity
+            // Show an error message and finish the Activity.
             Toast.makeText(getApplicationContext(), R.string.error_missing_params, Toast.LENGTH_SHORT).show();
             finish();
         }
     }
 
-    /**
-     * Create the layout
-     */
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top);
 
@@ -77,9 +74,6 @@ public class MainActivity extends AppCompatActivity implements
         initToolbars();
     }
 
-    /**
-     * Edit the Toolbars
-     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -90,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.top_items, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -115,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void readMessage() {
+        //TODO add the missing params
         Intent intent = new Intent(MainActivity.this, ReadMessageActivity.class);
         intent.putExtra(PASSPHRASE, passphrase);
         startActivity(intent);

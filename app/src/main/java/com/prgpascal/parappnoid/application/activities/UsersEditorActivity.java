@@ -110,22 +110,19 @@ public class UsersEditorActivity extends AppCompatActivity implements
                 }
 
             } else {
-                // Wrong request type
+                // Wrong request type.
                 Toast.makeText(getApplicationContext(), R.string.error_wrong_request_type, Toast.LENGTH_SHORT).show();
                 finish();
             }
 
         } else {
             // One or more parameters are missing!
-            // Show an error message and finish the activity.
+            // Show an error message and finish the Activity.
             Toast.makeText(getApplicationContext(), R.string.error_missing_params, Toast.LENGTH_SHORT).show();
             finish();
         }
     }
 
-    /**
-     * Create the layout
-     */
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top_bottom);
 
@@ -138,6 +135,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
     }
 
     public void performClientRequest(String username, int avatar) {
+        //TODO
         userToEdit.setUsername(username);
         userToEdit.setAvatar(avatar);
 
@@ -148,6 +146,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
     }
 
     public void performServerRequest(String username, int avatar, int numberOfKeys, int keysPerQR) {
+        //TODO
         userToEdit.setUsername(username);
         userToEdit.setAvatar(avatar);
 
@@ -174,10 +173,6 @@ public class UsersEditorActivity extends AppCompatActivity implements
         }
     }
 
-
-    /**
-     * Edit the Toolbars.
-     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -260,9 +255,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Show new dialog.
-     */
+    @Override
     public void showNewDialog(int dialogType) {
         switch (dialogType) {
             case DIALOG_TYPE_CONFIRM_DELETE:
@@ -275,9 +268,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * A positive button has been clicked
-     */
+    @Override
     public void doPositiveClick(int dialogType, char[] result) {
         switch (dialogType) {
             case DIALOG_TYPE_CONFIRM_DELETE:
@@ -289,9 +280,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * A negative button has been clicked
-     */
+    @Override
     public void doNegativeClick(int dialogType, char[] result) {
         // do nothing
     }
@@ -299,7 +288,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
     /**
      * A Database operation has finished.
      *
-     * @param result success or failure of database operation.
+     * @param result {@code true} if the operation ended with success, {@code false} otherwise.
      */
     public void onDBResponse(boolean result) {
         progressDialog.showProgressDialog(false, this);
@@ -327,5 +316,6 @@ public class UsersEditorActivity extends AppCompatActivity implements
      * @param result the ArrayList of associated users.
      */
     public void onDBResponse(ArrayList<AssociatedUser> result) {
+        // Do nothing
     }
 }

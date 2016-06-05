@@ -54,7 +54,9 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.REPL
 import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELECTED_USER;
 
 /**
- * Activity instantiated when a message arrived and must be decrypted.
+ * Activity that allows the user to read an encrypted message.
+ * It's instantiated when a message arrived and must be decrypted.
+ * It can also be instantiated by MainActivity, so the user can paste and decrypt an encrypted message.
  */
 public class ReadMessageActivity extends AppCompatActivity implements
         DBUtils.DbResponseCallback {
@@ -72,12 +74,9 @@ public class ReadMessageActivity extends AppCompatActivity implements
 
         dbUtils = DBUtils.getInstance(getApplicationContext());
 
-        // Check the Intent Action.
-        // It must be an ACTION_VIEW.
+        // Check the Intent Action, it must be an ACTION_VIEW.
         if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
-
-            // Get the HEX ciphertext.
-            // discard the prefix...
+            // Get the HEX ciphertext and discard the prefix...
             hexCiphertext = getIntent().getDataString().substring(MESSAGE_URI_PREFIX.length());
 
             // Pick the AssociatedUser to be used.
@@ -87,7 +86,7 @@ public class ReadMessageActivity extends AppCompatActivity implements
 
         } else {
             // Wrong Intent Action!
-            // Show an error message and finish the activity.
+            // Show an error message and finish the Activity.
             Toast.makeText(getApplicationContext(), R.string.error_intent_action, Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -95,7 +94,6 @@ public class ReadMessageActivity extends AppCompatActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
         if (requestCode == PICK_USER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 selectedUser = data.getParcelableExtra(SELECTED_USER);
@@ -114,9 +112,6 @@ public class ReadMessageActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Create the layout
-     */
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top_bottom);
 
@@ -128,9 +123,6 @@ public class ReadMessageActivity extends AppCompatActivity implements
         initToolbars();
     }
 
-    /**
-     * Edit the Toolbars
-     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -184,12 +176,12 @@ public class ReadMessageActivity extends AppCompatActivity implements
     /**
      * Check if the message length is correct.
      * <p/>
-     * If the length of the message is different from expected, false is returned.
+     * If the length of the message is different from expected, {@code false} is returned.
      * Expected length = (PAD_ID_LENGTH + PADS_LENGTH) * 2.
      * The message is encoded in HEX (i.e. 2 characters per byte).
      *
      * @param message the HEX ciphertext input message.
-     * @return true or false if the message length is correct or not.
+     * @return {@code true} if the message length is correct, {@code false} otherwise.
      */
     private boolean checkMessageLength(String message) {
         return (message.length() == (PAD_ID_LENGTH + PADS_LENGTH) * 2);
@@ -290,7 +282,7 @@ public class ReadMessageActivity extends AppCompatActivity implements
     /**
      * A Database operation has finished.
      *
-     * @param result success or failure of database operation.
+     * @param result {@code true} if the operation ended with success, {@code false} otherwise.
      */
     public void onDBResponse(boolean result) {
         progressDialog.showProgressDialog(false, this);
@@ -307,15 +299,16 @@ public class ReadMessageActivity extends AppCompatActivity implements
         }
     }
 
-    public interface ReadMessageInterface {
-        void setMesageContent(String s);
-    }
-
     /**
      * A Database operation has finished.
      *
      * @param result the ArrayList of associated users.
      */
     public void onDBResponse(ArrayList<AssociatedUser> result) {
+        // Do nothing
+    }
+
+    public interface ReadMessageInterface {
+        void setMesageContent(String s);
     }
 }

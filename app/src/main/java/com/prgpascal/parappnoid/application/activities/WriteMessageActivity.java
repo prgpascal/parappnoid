@@ -130,9 +130,6 @@ public class WriteMessageActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Create the layout.
-     */
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top_bottom);
 
@@ -144,9 +141,6 @@ public class WriteMessageActivity extends AppCompatActivity implements
         initToolbars();
     }
 
-    /**
-     * Edit the Toolbars.
-     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
@@ -187,9 +181,6 @@ public class WriteMessageActivity extends AppCompatActivity implements
         });
     }
 
-    /**
-     * Method called when a message must be sent.
-     */
     private void sendMessage() {
         WriteMessageInterface frag = (WriteMessageInterface) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         try {
@@ -292,7 +283,7 @@ public class WriteMessageActivity extends AppCompatActivity implements
     /**
      * A Database operation has finished.
      *
-     * @param result success or failure of database operation.
+     * @param result {@code true} if the operation ended with success, {@code false} otherwise.
      */
     public void onDBResponse(boolean result) {
         progressDialog.showProgressDialog(false, this);
