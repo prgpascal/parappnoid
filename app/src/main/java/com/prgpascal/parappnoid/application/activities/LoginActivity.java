@@ -13,6 +13,7 @@ import com.prgpascal.parappnoid.application.fragments.UsersListFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.Constants;
 import com.prgpascal.parappnoid.utils.DBUtils;
+import com.prgpascal.parappnoid.utils.MyProgressDialogManager;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -24,6 +25,7 @@ public class LoginActivity extends AppCompatActivity implements
         LoginFragment.LoginFragmentInterface,
         DBUtils.DbResponseCallback {
 
+    private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
     private DBUtils dbUtils;
     private char[] passphrase;
 
@@ -48,10 +50,12 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void loginButtonClicked(char[] passphrase) {
         this.passphrase = passphrase;
+        progressDialog.showProgressDialog(true, this);
         dbUtils.performLogin(passphrase, this);
     }
 
     public void onDBResponse(boolean result) {
+        progressDialog.showProgressDialog(false, this);
         if (result) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra(Constants.PASSPHRASE, passphrase);

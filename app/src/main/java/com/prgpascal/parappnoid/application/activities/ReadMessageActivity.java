@@ -37,6 +37,7 @@ import com.prgpascal.parappnoid.application.fragments.ReadMessageFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.model.OneTimePad;
 import com.prgpascal.parappnoid.utils.DBUtils;
+import com.prgpascal.parappnoid.utils.MyProgressDialogManager;
 import com.prgpascal.parappnoid.utils.MyUtils;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class ReadMessageActivity extends AppCompatActivity implements
     private AssociatedUser selectedUser;        // The selected AssociatedUser.
     private char[] passphrase;                  // Passphrase inserted by the user.
     private DBUtils dbUtils;                    // Object used for DB operations.
+    private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -272,6 +274,8 @@ public class ReadMessageActivity extends AppCompatActivity implements
             // Important!
             // Delete the keys
             keys.remove(padID);
+
+            progressDialog.showProgressDialog(true, this);
             dbUtils.deleteOtp(selectedUser.getUserID(), "D", padID, passphrase, this);
 
             return plaintext;
@@ -289,6 +293,7 @@ public class ReadMessageActivity extends AppCompatActivity implements
      * @param result success or failure of database operation.
      */
     public void onDBResponse(boolean result) {
+        progressDialog.showProgressDialog(false, this);
         if (result) {
             // DB Operation OK
             // Show the decrypted message (or error) to the user.

@@ -37,6 +37,7 @@ import com.prgpascal.parappnoid.application.fragments.WriteMessageFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.model.OneTimePad;
 import com.prgpascal.parappnoid.utils.DBUtils;
+import com.prgpascal.parappnoid.utils.MyProgressDialogManager;
 import com.prgpascal.parappnoid.utils.MyUtils;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class WriteMessageActivity extends AppCompatActivity implements
     public String activityRequestType;          // The type of request for this Activity.
     private char[] passphrase;                  // Passphrase inserted by the user.
     private DBUtils dbUtils;                    // Object used for DB operations.
+    private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
     private String hexCiphertext;               // HEX version of the ciphertext.
 
     @Override
@@ -281,6 +283,7 @@ public class WriteMessageActivity extends AppCompatActivity implements
         // The key must be deleted BEFORE the message delivery.
         // If the deletion fails, return null and the message will not be send.
         keys.remove(padID);
+        progressDialog.showProgressDialog(true, this);
         dbUtils.deleteOtp(selectedUser.getUserID(), "E", padID, passphrase, this);
 
         return hexMessage;
@@ -292,6 +295,7 @@ public class WriteMessageActivity extends AppCompatActivity implements
      * @param result success or failure of database operation.
      */
     public void onDBResponse(boolean result) {
+        progressDialog.showProgressDialog(false, this);
         if (result) {
             // DB Operation OK
             if (hexCiphertext != null) {

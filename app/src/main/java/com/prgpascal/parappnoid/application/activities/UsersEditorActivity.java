@@ -38,6 +38,7 @@ import com.prgpascal.parappnoid.application.fragments.dialogs.SimpleAlertDialogF
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.model.OneTimePad;
 import com.prgpascal.parappnoid.utils.DBUtils;
+import com.prgpascal.parappnoid.utils.MyProgressDialogManager;
 import com.prgpascal.parappnoid.utils.MyUtils;
 import com.prgpascal.qrdatatransfer.TransferActivity;
 
@@ -70,6 +71,8 @@ public class UsersEditorActivity extends AppCompatActivity implements
     private char[] passphrase;                      // Passphrase inserted by the user
 
     private DBUtils dbUtils;                                // Object used for DB operations
+    private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
+
     private int dbRequest;                                  // Request tags for the DB operations
     private static final int DB_REQUEST_SAVE_USER = 1;      //...
     private static final int DB_REQUEST_UPDATE_USER = 2;    //...
@@ -217,6 +220,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
                 // Save the AssociatedUser to DB
                 if (MyUtils.isValid(userToEdit.getUsername())) {
                     dbRequest = DB_REQUEST_UPDATE_USER;
+                    progressDialog.showProgressDialog(true, this);
                     dbUtils.updateUser(userToEdit, passphrase, this);
                 }
                 return true;
@@ -246,6 +250,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
                 // At this point Server and Client have set the right AssociatedUser and exchanged the keys.
                 // Proceed saving the AssociatedUser and keys into DB.
                 dbRequest = DB_REQUEST_SAVE_USER;
+                progressDialog.showProgressDialog(true, this);
                 dbUtils.saveAssociatedUser(userToEdit, keys, passphrase, this);
 
             } else {
@@ -278,6 +283,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
             case DIALOG_TYPE_CONFIRM_DELETE:
                 // Delete the AssociatedUser from DB.
                 dbRequest = DB_REQUEST_DELETE_USER;
+                progressDialog.showProgressDialog(true, this);
                 dbUtils.deleteUser(userToEdit, passphrase, this);
                 break;
         }
@@ -296,6 +302,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
      * @param result success or failure of database operation.
      */
     public void onDBResponse(boolean result) {
+        progressDialog.showProgressDialog(false, this);
         if (result) {
             // DB Operation OK
             Toast.makeText(getApplicationContext(), R.string.operation_ok, Toast.LENGTH_SHORT).show();

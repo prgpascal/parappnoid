@@ -32,6 +32,7 @@ import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.MainFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
+import com.prgpascal.parappnoid.utils.MyProgressDialogManager;
 
 import java.util.ArrayList;
 
@@ -44,6 +45,7 @@ public class SettingsEditorActivity extends AppCompatActivity implements
         DBUtils.DbResponseCallback {
 
     private DBUtils dbUtils;                        // Object used for DB operations. //TODO singleton
+    private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +110,7 @@ public class SettingsEditorActivity extends AppCompatActivity implements
             int newIterationsInt = Integer.valueOf(String.valueOf(newIterations));
 
             // Edit the DB Settings
+            progressDialog.showProgressDialog(true, this);
             dbUtils.editDBSettings(oldPassphrase, newPassphrase, newIterationsInt, this);
 
         } catch (WrongFieldException e) {
@@ -122,6 +125,7 @@ public class SettingsEditorActivity extends AppCompatActivity implements
      * @param result success or failure of database operation.
      */
     public void onDBResponse(boolean result) {
+        progressDialog.showProgressDialog(false, this);
         if (result) {
             // DB Operation OK
             // Show a confirm message and finish the Activity.

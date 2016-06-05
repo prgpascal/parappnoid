@@ -38,6 +38,7 @@ import com.prgpascal.parappnoid.application.fragments.dialogs.MyAlertDialogInter
 import com.prgpascal.parappnoid.application.fragments.dialogs.PassphraseDialogFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
+import com.prgpascal.parappnoid.utils.MyProgressDialogManager;
 
 import java.util.ArrayList;
 
@@ -61,7 +62,8 @@ public class UsersListActivity extends AppCompatActivity implements
 
     public String activityRequestType;                  // The type of request for this activity.
     private char[] passphrase;                          // Passphrase inserted by the user
-    private DBUtils dbUtils; //TODO singleton
+    private DBUtils dbUtils;
+    private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,6 +211,7 @@ public class UsersListActivity extends AppCompatActivity implements
      * @param result success or failure of database operation.
      */
     public void onDBResponse(boolean result) {
+        progressDialog.showProgressDialog(false, this);
         if (result) {
             // DB Operation OK
             // Do nothing
@@ -225,6 +228,7 @@ public class UsersListActivity extends AppCompatActivity implements
      * @param result the ArrayList of associated users.
      */
     public void onDBResponse(ArrayList<AssociatedUser> result) {
+        progressDialog.showProgressDialog(false, this);
         if (result != null) {
             UsersListFragment frag = (UsersListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
             frag.updateLayout(result);
@@ -235,6 +239,7 @@ public class UsersListActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
 
+        progressDialog.showProgressDialog(true, this);
         dbUtils.loadAssociatedUsers(passphrase, this);
     }
 }
