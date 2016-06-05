@@ -19,14 +19,12 @@
 
 package com.prgpascal.parappnoid.utils;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 
-import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.model.OneTimePad;
 
@@ -55,15 +53,14 @@ import static com.prgpascal.parappnoid.utils.Constants.DatabaseConstants.TABLE_U
 import static com.prgpascal.parappnoid.utils.Constants.PREFERENCES;
 
 /**
- * Class that performs all the DB operations.
- * The constructor is not public.
- * To instantiate it, use getNewInstance with an Activity context parameter.
+ * Singleton class that performs all the DB operations.
+ * To instantiate it, use getNewInstance with an Application context parameter.
  */
 public class DBUtils {
-    private Context context;                // The Activity context
-    private String dbName;                  // The Database name
-    private int iterations;                 // The number of iterations for the KDF implemented by SQLCipher
-    private ProgressDialog progressDialog;  // ProgressDialog used during operations
+    private static DBUtils sInstance;           // Singleton instance.
+    private Context mContext;                   // The Application context.
+    private String mDbName;                     // The Database name.
+    private int mIterations;                    // The number of iterations for the KDF implemented by SQLCipher.
 
     private String CREATE_USERS_TABLE =
             "create table if not exists " +
@@ -93,90 +90,73 @@ public class DBUtils {
                     "FOREIGN KEY (" + KEY_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + KEY_USER_ID + ") ON DELETE CASCADE , " +
                     "PRIMARY KEY (" + KEY_USER_ID + " , " + KEY_PAD_ID + "));";
 
-
-    /**
-     * Show or stop the ProgressDialog.
-     *
-     * @param show true if the start the ProgressDialog, false to stop it.
-     */
-    public void showProgressDialog(boolean show) {
-        if (show) {
-            // Show the ProgressDialog
-            progressDialog = ProgressDialog.show(context, null, context.getResources().getString(R.string.please_wait) , true);
-            progressDialog.setCancelable(false);
-
-        } else {
-            try {
-                // Stop showing ProgressDialog
-                progressDialog.dismiss();
-            } catch (NullPointerException e) {}
+    public static DBUtils getInstance(Context context) {
+        if (sInstance == null) {
+            // Read dbName and iterations from the SharedPreferences
+            SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE);
+            String dbName = prefs.getString(DB_NAME, DEFAULT_DB_NAME);
+            int iterations = prefs.getInt(ITERATIONS, DEFAULT_ITERATIONS);
+            sInstance = new DBUtils(context, dbName, iterations);
         }
+        return sInstance;
     }
 
-
-
-    /** Interface implemented by the activities that perform DB operations */
-    public interface DBResponseListener {
+    /**
+     * Callback interface, implemented by the Activities that perform DB operations.
+     */
+    public interface DbResponseCallback {
         void onDBResponse(boolean result);
+
         void onDBResponse(ArrayList<AssociatedUser> result);
     }
 
-
-
-    /** Static constructor */
-    public static DBUtils getNewInstance(Context context){
-        // Read dbName and iterations from the SharedPreferences
-        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE);
-        String dbName = prefs.getString(DB_NAME, DEFAULT_DB_NAME);
-        int iterations = prefs.getInt(ITERATIONS, DEFAULT_ITERATIONS);
-
-        return new DBUtils(context, dbName, iterations);
+    private DBUtils(Context context, String dbName, int iterations) {
+        mContext = context;
+        mDbName = dbName;
+        mIterations = iterations;
     }
 
+    public void performLogin(final char[] passphrase, final DbResponseCallback callback) {
+        AsyncTask<Object, Void, Object> task = new AsyncTask<Object, Void, Object>() {
+            @Override
+            protected Object doInBackground(Object... objects) {
+                try {
+                    openDatabase(passphrase);
+                    return true;
+                } catch (SQLiteException e) {
+                    return false;
+                }
+            }
 
-
-    /** Private Constructor */
-    private DBUtils(Context context, String dbName, int iterations){
-        this.context = context;
-        this.dbName = dbName;
-        this.iterations = iterations;
+            @Override
+            protected void onPostExecute(Object o) {
+                callback.onDBResponse((boolean) o);
+            }
+        };
+        task.execute("ASYNC_TASK");
     }
 
-    //TODO new
-    public boolean performLogin(char[] passphrase){
-        // Open the Database, if an exception is catched here, the passphrase is wrong.
-        try {
-            SQLiteDatabase db = openDatabase(passphrase);
-            return true;
-        } catch (SQLiteException e) {
-            return false;
-        }
-    }
-
-    //TODO new
-    public char[] eraseCharArray(char[] charArray){
-        for (int i=0; i<charArray.length; i++){
+    public char[] eraseCharArray(char[] charArray) {
+        for (int i = 0; i < charArray.length; i++)
             charArray[i] = 'X';
-        }
+
         charArray = null;
         return charArray;
     }
 
-
     /**
      * Open the database.
-     * If it not exists, this method will create it.
+     * If it not exists, a new one will be created.
      *
      * @param passphrase the passphrase for the Database.
      * @return opened SQLite Database instance.
      * @throws SQLiteException if the passphrase is wrong.
      */
     private SQLiteDatabase openDatabase(char[] passphrase) throws SQLiteException {
-
         // Set the number of iterations for the KDF
         SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
             public void postKey(SQLiteDatabase database) {
-                database.rawExecSQL("PRAGMA kdf_iter = " + iterations);
+                database.rawExecSQL("PRAGMA kdf_iter = " + mIterations);
                 database.rawExecSQL("PRAGMA foreign_keys=ON");
             }
 
@@ -185,8 +165,8 @@ public class DBUtils {
         };
 
         // Open the SQLite Database
-        SQLiteDatabase.loadLibs(context);
-        String dbPath = context.getDatabasePath(dbName).getPath();
+        SQLiteDatabase.loadLibs(mContext);
+        String dbPath = mContext.getDatabasePath(mDbName).getPath();
         File dbPathFile = new File(dbPath);
         if (!dbPathFile.exists())
             dbPathFile.getParentFile().mkdirs();
@@ -200,24 +180,26 @@ public class DBUtils {
         return db;
     }
 
-
-
     /**
      * Insert the AssociatedUser and generated One-Time Pads into DB.
      *
-     * @param user the AssociatedUser.
-     * @param keys the HashMap with OtpKeys objects.
+     * @param user       the AssociatedUser.
+     * @param keys       the HashMap with OtpKeys objects.
      * @param passphrase the passphrase for the Database.
      * @return boolean value representing the success of operation.
      */
-    public void saveAssociatedUser(final AssociatedUser user, final HashMap<Integer, OneTimePad> keys, final char[] passphrase) {
-        showProgressDialog(true);
-        new Thread(new Runnable() {
+    public void saveAssociatedUser(final AssociatedUser user, final HashMap<Integer, OneTimePad> keys, final char[] passphrase, final DbResponseCallback callback) {
+        AsyncTask<Object, Void, Object> task = new AsyncTask<Object, Void, Object>() {
             @Override
-            public void run() {
-
+            protected Object doInBackground(Object... objects) {
                 // Open the Database
-                SQLiteDatabase db = openDatabase(passphrase);
+                SQLiteDatabase db;
+                try {
+                    db = openDatabase(passphrase);
+                } catch (SQLiteException e) {
+                    e.printStackTrace();
+                    return false;
+                }
 
                 // Get an available UserID
                 String userID;
@@ -225,20 +207,18 @@ public class DBUtils {
                     // Generate new UserID
                     userID = MyUtils.encodeHEX(MyUtils.createRandomString(5));
 
-                    // Check if it already exists in DB
-                    String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + KEY_USER_ID + "='" + userID+"'";
+                    // Check if it already exists inside the DB
+                    String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + KEY_USER_ID + "='" + userID + "'";
                     Cursor cursor = db.rawQuery(query, null);
 
-                    if(cursor.getCount() > 0){
-                        // The generated UserID already exists in DB.
-                        // reset it to null.
+                    if (cursor.getCount() > 0) {
+                        // The generated UserID already exists in DB, reset it to null.
                         userID = null;
                     }
 
                     cursor.close();
 
                 } while (userID == null);
-
 
                 // Save the AssociatedUser into DB
                 ContentValues newValues = new ContentValues();
@@ -247,18 +227,16 @@ public class DBUtils {
                 newValues.put(KEY_AVATAR, user.getAvatar());
                 db.insert(TABLE_USERS, null, newValues);
 
-
                 // Save the One-Time Pad keys into DB
                 for (Map.Entry<Integer, OneTimePad> entry : keys.entrySet()) {
                     OneTimePad value = entry.getValue();
-
                     newValues = new ContentValues();
                     newValues.put(KEY_USER_ID, userID);
                     newValues.put(KEY_PAD_ID, entry.getKey());
                     newValues.put(KEY_KEY_FOR_PLAINTEXT, value.getKeyForPlaintext());
                     newValues.put(KEY_KEY_FOR_MAC, value.getKeyForMac());
 
-                    if (value.getPurpose().equals("E")){
+                    if (value.getPurpose().equals("E")) {
                         // This is an encryption key
                         db.insert(TABLE_ENCRYPTION_KEYS, null, newValues);
                     } else {
@@ -268,20 +246,16 @@ public class DBUtils {
                 }
 
                 db.close();
-
-                // Send response to the Activity
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgressDialog(false);
-                        ((DBResponseListener) context).onDBResponse(true);
-                    }
-                });
+                return true;
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(Object o) {
+                callback.onDBResponse((boolean) o);
+            }
+        };
+        task.execute("ASYNC_TASK");
     }
-
-
 
     /**
      * Read from DB all the Associated Users and One-Time Pad keys.
@@ -289,30 +263,17 @@ public class DBUtils {
      * @param passphrase the passphrase for the Database.
      * @return ArrayList of AssociatedUser objects.
      */
-    public void loadAssociatedUsers(final char[] passphrase){
-        showProgressDialog(true);
-        new Thread(new Runnable() {
+    public void loadAssociatedUsers(final char[] passphrase, final DbResponseCallback callback) {
+        AsyncTask<Object, Void, Object> task = new AsyncTask<Object, Void, Object>() {
             @Override
-            public void run() {
-
+            protected Object doInBackground(Object... objects) {
                 // Open the Database
-                // If an exception is catch here, the passphrase is wrong.
                 SQLiteDatabase db;
                 try {
                     db = openDatabase(passphrase);
-
                 } catch (SQLiteException e) {
                     e.printStackTrace();
-
-                    // Send response to the Activity
-                    ((Activity) context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showProgressDialog(false);
-                            ((DBResponseListener) context).onDBResponse(false);
-                        }
-                    });
-                    return;
+                    return false;
                 }
 
                 // Get the Associated Users
@@ -327,13 +288,12 @@ public class DBUtils {
                             cursor.getInt(cursor.getColumnIndexOrThrow(KEY_AVATAR))));
                 }
 
-
                 // Get the keys for each AssociatedUser
                 for (AssociatedUser user : usersList) {
                     try {
 
                         // Encryption keys
-                        query = "SELECT * FROM " + TABLE_ENCRYPTION_KEYS + " WHERE " + KEY_USER_ID + "='" + user.getUserID() +"'";
+                        query = "SELECT * FROM " + TABLE_ENCRYPTION_KEYS + " WHERE " + KEY_USER_ID + "='" + user.getUserID() + "'";
                         cursor = db.rawQuery(query, null);
 
                         while (cursor.moveToNext()) {
@@ -345,9 +305,8 @@ public class DBUtils {
                             user.addEncryptionKey(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_PAD_ID)), key);
                         }
 
-
                         // Decryption keys
-                        query = "SELECT * FROM " + TABLE_DECRYPTION_KEYS + " WHERE " + KEY_USER_ID + "='" + user.getUserID() +"'";
+                        query = "SELECT * FROM " + TABLE_DECRYPTION_KEYS + " WHERE " + KEY_USER_ID + "='" + user.getUserID() + "'";
                         cursor = db.rawQuery(query, null);
 
                         while (cursor.moveToNext()) {
@@ -369,33 +328,33 @@ public class DBUtils {
                 db.close();
 
                 // Send response to the Activity
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgressDialog(false);
-                        ((DBResponseListener) context).onDBResponse(usersList);
-                    }
-                });
+                return usersList;
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(Object o) {
+                if (o instanceof Boolean)
+                    callback.onDBResponse((boolean) o);
+                else
+                    callback.onDBResponse((ArrayList<AssociatedUser>) o);
+            }
+        };
+        task.execute("ASYNC_TASK");
     }
-
-
 
     /**
      * Delete a single One-Time Pad key from database.
      *
-     * @param userID the unique user ID.
-     * @param keyType the type of key ("E" or "D").
-     * @param padID the ID of the One-Time Pad to be deleted.
+     * @param userID     the unique user ID.
+     * @param keyType    the type of key ("E" or "D").
+     * @param padID      the ID of the One-Time Pad to be deleted.
      * @param passphrase the passphrase for the Database.
      * @return boolean value representing the success of operation.
      */
-    public void deleteOtp(final String userID, final String keyType, final int padID, final char[] passphrase){
-        showProgressDialog(true);
-        new Thread(new Runnable() {
+    public void deleteOtp(final String userID, final String keyType, final int padID, final char[] passphrase, final DbResponseCallback callback) {
+        AsyncTask<Object, Void, Object> task = new AsyncTask<Object, Void, Object>() {
             @Override
-            public void run() {
+            protected Object doInBackground(Object... objects) {
                 // Open the Database
                 SQLiteDatabase db = openDatabase(passphrase);
 
@@ -409,16 +368,7 @@ public class DBUtils {
 
                     String where = KEY_PAD_ID + "='" + (padID) + "' AND " + KEY_USER_ID + "='" + userID + "'";
                     db.delete(table, where, null);
-
-                    // Send response to the Activity
-                    ((Activity)context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showProgressDialog(false);
-                            ((DBResponseListener) context).onDBResponse(true);
-                        }
-                    });
-                    return;
+                    return true;
 
                 } catch (SQLiteException e) {
                     // Error during deletion
@@ -427,53 +377,40 @@ public class DBUtils {
                     db.close();
                 }
 
-                // Send response to the Activity
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgressDialog(false);
-                        ((DBResponseListener) context).onDBResponse(false);
-                    }
-                });
+                return false;
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(Object o) {
+                callback.onDBResponse((boolean) o);
+            }
+        };
+        task.execute("ASYNC_TASK");
     }
-
-
 
     /**
      * Delete an Associated User from database.
      * This method will also remove all the One-Time Pad keys of that user.
      *
-     * @param user the user to be deleted.
+     * @param user       the user to be deleted.
      * @param passphrase the passphrase for the Database.
      * @return boolean value representing the success of operation.
      */
-    public void deleteUser(final AssociatedUser user, final char[] passphrase){
-        showProgressDialog(true);
-        new Thread(new Runnable() {
+    public void deleteUser(final AssociatedUser user, final char[] passphrase, final DbResponseCallback callback) {
+        AsyncTask<Object, Void, Object> task = new AsyncTask<Object, Void, Object>() {
             @Override
-            public void run() {
+            protected Object doInBackground(Object... objects) {
                 // Open the Database
                 SQLiteDatabase db = openDatabase(passphrase);
 
                 try {
                     // Delete the AssociatedUser from DB
-                    String where = KEY_USER_ID + "='" + (user.getUserID()+"'");
+                    String where = KEY_USER_ID + "='" + (user.getUserID() + "'");
                     db.delete(TABLE_USERS, where, null);
 
                     // Because of "ON DELETE CASCADE" the one-time pad keys associated
                     // with this user will be deleted too.
-
-                    // Send response to the Activity
-                    ((Activity) context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showProgressDialog(false);
-                            ((DBResponseListener) context).onDBResponse(true);
-                        }
-                    });
-                    return;
+                    return true;
 
                 } catch (SQLiteException e) {
                     // An error occured
@@ -482,31 +419,27 @@ public class DBUtils {
                     db.close();
                 }
 
-                // Send response to the Activity
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgressDialog(false);
-                        ((DBResponseListener) context).onDBResponse(false);
-                    }
-                });
+                return false;
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(Object o) {
+                callback.onDBResponse((boolean) o);
+            }
+        };
+        task.execute("ASYNC_TASK");
     }
-
-
 
     /**
      * Update an AssciatedUser inside the DB.
      *
-     * @param user the user to be updated.
+     * @param user       the user to be updated.
      * @param passphrase the passphrase for the Database
      */
-    public void updateUser(final AssociatedUser user, final char[] passphrase) {
-        showProgressDialog(true);
-        new Thread(new Runnable() {
+    public void updateUser(final AssociatedUser user, final char[] passphrase, final DbResponseCallback callback) {
+        AsyncTask<Object, Void, Object> task = new AsyncTask<Object, Void, Object>() {
             @Override
-            public void run() {
+            protected Object doInBackground(Object... objects) {
                 // Open the Database
                 SQLiteDatabase db = openDatabase(passphrase);
 
@@ -519,16 +452,7 @@ public class DBUtils {
                     newValues.put(KEY_AVATAR, user.getAvatar());
 
                     db.update(TABLE_USERS, newValues, where, null);
-
-                    // Send response to the Activity
-                    ((Activity) context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showProgressDialog(false);
-                            ((DBResponseListener) context).onDBResponse(true);
-                        }
-                    });
-                    return;
+                    return true;
 
                 } catch (SQLiteException e) {
                     e.printStackTrace();
@@ -536,19 +460,16 @@ public class DBUtils {
                     db.close();
                 }
 
-                // Send response to the Activity
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgressDialog(false);
-                        ((DBResponseListener) context).onDBResponse(false);
-                    }
-                });
+                return false;
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(Object o) {
+                callback.onDBResponse((boolean) o);
+            }
+        };
+        task.execute("ASYNC_TASK");
     }
-
-
 
     /**
      * Edit the DB settings.
@@ -558,11 +479,10 @@ public class DBUtils {
      * @param newIterations the number of iterations for the new DB.
      * @return boolean value representing the success of operation.
      */
-    public void editDBSettings(final char[] oldPassphrase, final char[] newPassphrase, final int newIterations){
-        showProgressDialog(true);
-        new Thread(new Runnable() {
+    public void editDBSettings(final char[] oldPassphrase, final char[] newPassphrase, final int newIterations, final DbResponseCallback callback) {
+        AsyncTask<Object, Void, Object> task = new AsyncTask<Object, Void, Object>() {
             @Override
-            public void run() {
+            protected Object doInBackground(Object... objects) {
                 // Open the OLD Database
                 // If an exception is catched here, the passphrase is wrong.
                 SQLiteDatabase db;
@@ -571,24 +491,13 @@ public class DBUtils {
 
                 } catch (SQLiteException e) {
                     e.printStackTrace();
-
-                    // Send response to the Activity
-                    ((Activity)context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showProgressDialog(false);
-                            ((DBResponseListener) context).onDBResponse(false);
-                        }
-                    });
-                    return;
+                    return false;
                 }
-
 
                 // Create the NEW database.
                 // The name is 6 random HEX characters (3 bytes).
                 String newDBName = MyUtils.encodeHEX(MyUtils.createRandomString(3)) + ".db";
-                String newDBPath = context.getDatabasePath(newDBName).getPath();
-
+                String newDBPath = mContext.getDatabasePath(newDBName).getPath();
 
                 // Export OLD database to the new one.
                 db.execSQL("ATTACH database ? AS newdb KEY ?", new Object[]{newDBPath, String.valueOf(newPassphrase)});
@@ -597,35 +506,31 @@ public class DBUtils {
                 db.rawExecSQL("DETACH DATABASE newdb;");
                 db.close();
 
-
                 // Update the SharedPreferences
-                SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE);
+                SharedPreferences prefs = mContext.getSharedPreferences(PREFERENCES, mContext.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString(DB_NAME, newDBName);
                 editor.putInt(ITERATIONS, newIterations);
                 editor.commit();
 
                 // Delete the OLD database file
-                File oldDB = context.getDatabasePath(dbName);
+                File oldDB = mContext.getDatabasePath(mDbName);
                 if (oldDB.exists()) {
                     oldDB.delete();
                 }
 
                 // Update this instance values
-                dbName = newDBName;
-                iterations = newIterations;
+                mDbName = newDBName;
+                mIterations = newIterations;
 
-                // Send response to the Activity
-                ((Activity)context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgressDialog(false);
-                        ((DBResponseListener) context).onDBResponse(true);
-                    }
-                });
+                return true;
             }
 
-        }).start();
+            @Override
+            protected void onPostExecute(Object o) {
+                callback.onDBResponse((boolean) o);
+            }
+        };
+        task.execute("ASYNC_TASK");
     }
-
 }

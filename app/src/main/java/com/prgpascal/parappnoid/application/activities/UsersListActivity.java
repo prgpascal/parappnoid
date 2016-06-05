@@ -34,10 +34,10 @@ import android.widget.Toast;
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.MainFragment;
 import com.prgpascal.parappnoid.application.fragments.UsersListFragment;
+import com.prgpascal.parappnoid.application.fragments.dialogs.MyAlertDialogInterface;
+import com.prgpascal.parappnoid.application.fragments.dialogs.PassphraseDialogFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
-import com.prgpascal.parappnoid.utils.MyAlertDialogs.MyAlertDialogInterface;
-import com.prgpascal.parappnoid.utils.MyAlertDialogs.MyPassphraseDialogFragment;
 
 import java.util.ArrayList;
 
@@ -57,7 +57,7 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELE
  */
 public class UsersListActivity extends AppCompatActivity implements
         MyAlertDialogInterface,
-        DBUtils.DBResponseListener {
+        DBUtils.DbResponseCallback {
 
     public String activityRequestType;                  // The type of request for this activity.
     private char[] passphrase;                          // Passphrase inserted by the user
@@ -67,7 +67,7 @@ public class UsersListActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        dbUtils = DBUtils.getNewInstance(UsersListActivity.this);
+        dbUtils = DBUtils.getInstance(getApplicationContext());
 
         // Get the Intent parameters.
         if (getIntent().hasExtra(ACTIVITY_REQUEST_TYPE)) {
@@ -98,7 +98,7 @@ public class UsersListActivity extends AppCompatActivity implements
         switch (dialogType) {
             case DIALOG_TYPE_REQUEST_PASSPHRASE:
                 // Ask the passphrase to the user.
-                DialogFragment dialog1 = MyPassphraseDialogFragment.newInstance(
+                DialogFragment dialog1 = PassphraseDialogFragment.newInstance(
                         dialogType,
                         getResources().getString(R.string.insert_passphprase), null);
                 dialog1.setCancelable(false);
@@ -235,6 +235,6 @@ public class UsersListActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
 
-        dbUtils.loadAssociatedUsers(passphrase);
+        dbUtils.loadAssociatedUsers(passphrase, this);
     }
 }

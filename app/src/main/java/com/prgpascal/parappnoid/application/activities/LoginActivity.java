@@ -5,21 +5,33 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.LoginFragment;
+import com.prgpascal.parappnoid.application.fragments.UsersListFragment;
+import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.Constants;
 import com.prgpascal.parappnoid.utils.DBUtils;
+
+import java.util.ArrayList;
+import java.util.Timer;
 
 /**
  * Activity that allows the user to insert the passphrase.
  */
 public class LoginActivity extends AppCompatActivity implements
-        LoginFragment.LoginFragmentInterface {
+        LoginFragment.LoginFragmentInterface,
+        DBUtils.DbResponseCallback {
+
+    private DBUtils dbUtils;
+    private char[] passphrase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        dbUtils = DBUtils.getInstance(getApplicationContext());
 
         createLayout();
     }
@@ -35,9 +47,12 @@ public class LoginActivity extends AppCompatActivity implements
 
     @Override
     public void loginButtonClicked(char[] passphrase) {
-        DBUtils dbUtils = DBUtils.getNewInstance(this); // TODO singleton
+        this.passphrase = passphrase;
+        dbUtils.performLogin(passphrase, this);
+    }
 
-        if (dbUtils.performLogin(passphrase)) {
+    public void onDBResponse(boolean result) {
+        if (result) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra(Constants.PASSPHRASE, passphrase);
             startActivity(intent);
@@ -48,9 +63,17 @@ public class LoginActivity extends AppCompatActivity implements
             finish();
 
         } else {
-            // Login error
-            LoginFragment fragment = (LoginFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            fragment.wrongPassphraseInserted();
+            Toast.makeText(getApplicationContext(), "" + result, Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * A Database operation has finished.
+     *
+     * @param result the ArrayList of associated users.
+     */
+    public void onDBResponse(ArrayList<AssociatedUser> result) {
+        // Do nothing
+    }
+
 }

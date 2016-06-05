@@ -56,7 +56,9 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELE
 /**
  * Activity that allows the user to write and send a new encrypted message to a specified AssociatedUser.
  */
-public class WriteMessageActivity extends AppCompatActivity implements DBUtils.DBResponseListener {
+public class WriteMessageActivity extends AppCompatActivity implements
+        DBUtils.DbResponseCallback {
+
     private AssociatedUser selectedUser;        // The selected AssociatedUser.
     public String activityRequestType;          // The type of request for this Activity.
     private char[] passphrase;                  // Passphrase inserted by the user.
@@ -67,8 +69,7 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Instantiate the DBUtils object
-        dbUtils = DBUtils.getNewInstance(WriteMessageActivity.this); //TODO singleton
+        dbUtils = DBUtils.getInstance(getApplicationContext());
 
         // Get the Intent parameters.
         if (getIntent().hasExtra(ACTIVITY_REQUEST_TYPE) && getIntent().hasExtra(PASSPHRASE)) {
@@ -136,7 +137,7 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         Fragment fragment = WriteMessageFragment.newInstance();
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         trans.replace(R.id.fragment_container, fragment);
-        trans.commit();
+        trans.commitAllowingStateLoss();
 
         initToolbars();
     }
@@ -280,7 +281,7 @@ public class WriteMessageActivity extends AppCompatActivity implements DBUtils.D
         // The key must be deleted BEFORE the message delivery.
         // If the deletion fails, return null and the message will not be send.
         keys.remove(padID);
-        dbUtils.deleteOtp(selectedUser.getUserID(), "E", padID, passphrase);
+        dbUtils.deleteOtp(selectedUser.getUserID(), "E", padID, passphrase, this);
 
         return hexMessage;
     }

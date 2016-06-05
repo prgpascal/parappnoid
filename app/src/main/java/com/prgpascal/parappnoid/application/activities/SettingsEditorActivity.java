@@ -32,7 +32,6 @@ import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.MainFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
-import com.prgpascal.parappnoid.utils.DBUtils.DBResponseListener;
 
 import java.util.ArrayList;
 
@@ -41,14 +40,16 @@ import java.util.ArrayList;
  * Here the user can choose new values for the passphrase and/or the number of iterations used
  * by the KDF, implemented by SQLCipher.
  */
-public class SettingsEditorActivity extends AppCompatActivity implements DBResponseListener {
+public class SettingsEditorActivity extends AppCompatActivity implements
+        DBUtils.DbResponseCallback {
+
     private DBUtils dbUtils;                        // Object used for DB operations. //TODO singleton
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        dbUtils = DBUtils.getNewInstance(SettingsEditorActivity.this); //TODO singleton
+        dbUtils = DBUtils.getInstance(getApplicationContext());
         createLayout();
     }
 
@@ -107,7 +108,7 @@ public class SettingsEditorActivity extends AppCompatActivity implements DBRespo
             int newIterationsInt = Integer.valueOf(String.valueOf(newIterations));
 
             // Edit the DB Settings
-            dbUtils.editDBSettings(oldPassphrase, newPassphrase, newIterationsInt);
+            dbUtils.editDBSettings(oldPassphrase, newPassphrase, newIterationsInt, this);
 
         } catch (WrongFieldException e) {
             // Wrong parameters

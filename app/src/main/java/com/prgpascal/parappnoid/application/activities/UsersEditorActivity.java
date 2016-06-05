@@ -22,29 +22,22 @@ package com.prgpascal.parappnoid.application.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.application.adapters.AvatarImageAdapter;
+import com.prgpascal.parappnoid.application.fragments.UsersEditorFragment;
+import com.prgpascal.parappnoid.application.fragments.dialogs.MyAlertDialogInterface;
+import com.prgpascal.parappnoid.application.fragments.dialogs.SimpleAlertDialogFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.model.OneTimePad;
 import com.prgpascal.parappnoid.utils.DBUtils;
-import com.prgpascal.parappnoid.utils.MyAlertDialogs.MyAlertDialogFragment;
-import com.prgpascal.parappnoid.utils.MyAlertDialogs.MyAlertDialogInterface;
 import com.prgpascal.parappnoid.utils.MyUtils;
 import com.prgpascal.qrdatatransfer.TransferActivity;
 
@@ -67,22 +60,11 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELE
  */
 public class UsersEditorActivity extends AppCompatActivity implements
         MyAlertDialogInterface,
-        DBUtils.DBResponseListener {
+        DBUtils.DbResponseCallback {
 
-    private HashMap<Integer, OneTimePad> keys;      // Array of generated keys of the specified user
-    private ArrayList<String> groupsOfKeys;         // Generated keys grouped in Strings
-
-    private EditText usernameEditText;              // EditText for username input
-    private ImageView avatarImageView;              // ImageView for Avatar selection
-    private EditText numberOfKeysEditText;          // EditText for the number of keys selection
-    private EditText keysPerQREditText;             // EditText for the number of keys per QR code selection
-    private RadioGroup radioGroup;                  // RadioGroup for the number generator type selection
-
-    private int selectedGenerator = R.id.radioTRNG; // The default generator is the TRNG
     private AssociatedUser userToEdit;              // The AssociatedUser to be edited or created.
-
-    private AlertDialog avatarDialog;                           // AlertDialog for the Avatar selection
-    private final int DEFAULT_AVATAR = R.drawable.avatar0;      // Default Avatar resource image
+    private HashMap<Integer, OneTimePad> keys;      // Array of generated keys of the specified user.
+    private ArrayList<String> groupsOfKeys;         // Generated keys grouped in Strings.
 
     public String activityRequestType;              // The type of request for this activity: new user or edit an existing one
     private char[] passphrase;                      // Passphrase inserted by the user
@@ -93,47 +75,42 @@ public class UsersEditorActivity extends AppCompatActivity implements
     private static final int DB_REQUEST_UPDATE_USER = 2;    //...
     private static final int DB_REQUEST_DELETE_USER = 3;    //...
 
+    int DEFAULT_AVATAR = R.drawable.avatar0;
+
     // Dialogs request codes
     private static final int DIALOG_TYPE_CONFIRM_DELETE = 111;
-    private static final int DIALOG_TYPE_AVATAR_PICKER = 333;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Instantiate the DBUtils object
-        dbUtils = DBUtils.getNewInstance(UsersEditorActivity.this);
+        dbUtils = DBUtils.getInstance(getApplicationContext());
 
-        // Check and get all the Intent parameters.
-        // If a parameter is missing, show an error and finish the Activity.
-        Intent intent = getIntent();
-        if (intent.hasExtra(ACTIVITY_REQUEST_TYPE) &&
-            (intent.hasExtra(PASSPHRASE))) {
-
-            // Parameters OK, read them all!
-            activityRequestType = intent.getStringExtra(ACTIVITY_REQUEST_TYPE);
-            passphrase = intent.getCharArrayExtra(PASSPHRASE);
+        // Get the Intent parameters.
+        if (getIntent().hasExtra(ACTIVITY_REQUEST_TYPE) && (getIntent().hasExtra(PASSPHRASE))) {
+            activityRequestType = getIntent().getStringExtra(ACTIVITY_REQUEST_TYPE);
+            passphrase = getIntent().getCharArrayExtra(PASSPHRASE);
 
             if (activityRequestType.equals(NEW_USER)) {
-                // A new user must be created.
                 userToEdit = new AssociatedUser(null, null, DEFAULT_AVATAR);
+                createLayout();
 
             } else if (activityRequestType.equals(EDIT_USERS)) {
-                // Edit an existing AssociatedUser.
-                if (intent.hasExtra(SELECTED_USER)) {
+                if (getIntent().hasExtra(SELECTED_USER)) {
                     userToEdit = getIntent().getParcelableExtra(SELECTED_USER);
+                    createLayout();
 
                 } else {
                     // Param missing!
                     Toast.makeText(getApplicationContext(), R.string.error_missing_params, Toast.LENGTH_SHORT).show();
                     finish();
                 }
-            }
 
-            // Create the layout
-            createLayout();
+            } else {
+                // Wrong request type
+                Toast.makeText(getApplicationContext(), R.string.error_wrong_request_type, Toast.LENGTH_SHORT).show();
+                finish();
+            }
 
         } else {
             // One or more parameters are missing!
@@ -143,166 +120,68 @@ public class UsersEditorActivity extends AppCompatActivity implements
         }
     }
 
-
-
-    /** Create the layout */
+    /**
+     * Create the layout
+     */
     private void createLayout() {
-        // Set the layout
-        setContentView(R.layout.activity_toolbar_top);
+        setContentView(R.layout.activity_toolbar_top_bottom);
 
-        // Toolbars
+        Fragment fragment = UsersEditorFragment.newInstance();
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, fragment);
+        trans.commit();
+
         initToolbars();
+    }
 
-        // Username EditText
-        usernameEditText = (EditText)findViewById(R.id.username);
-        usernameEditText.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-                // Update the AssociatedUser username.
-                userToEdit.setUsername(s.toString());
-            }
+    public void performClientRequest(String username, int avatar) {
+        userToEdit.setUsername(username);
+        userToEdit.setAvatar(avatar);
 
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-        });
+        // Start the Activity for keys exchange
+        Intent intent = new Intent(UsersEditorActivity.this, TransferActivity.class);
+        intent.putExtra(I_AM_THE_SERVER, false);
+        startActivityForResult(intent, KEY_EXCHANGE_REQUEST_CODE);
+    }
 
+    public void performServerRequest(String username, int avatar, int numberOfKeys, int keysPerQR) {
+        userToEdit.setUsername(username);
+        userToEdit.setAvatar(avatar);
 
-        // Avatar ImageView
-        avatarImageView = (ImageView)findViewById(R.id.avatar);
-        avatarImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Show Avatar Picker Dialog
-                showNewDialog(DIALOG_TYPE_AVATAR_PICKER);
-            }
-        });
+        //TODO generate keys by CSPRNG TEMP
+        keys = new MyUtils().generateOneTimePads(numberOfKeys, PADS_LENGTH);
 
+        if (keys != null) {
+            // Group the generated keys
+            groupsOfKeys = MyUtils.encodeGroupsOfKeys(keys, keysPerQR);
 
-        // Number generator RadioGroup
-        radioGroup = (RadioGroup)findViewById(R.id.radioGroup);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                // Update the selected key generator
-                selectedGenerator = i;
-            }
-        });
+            // Set up the QR TransferActivity
+            Bundle b = new Bundle();
+            Intent intent = new Intent(UsersEditorActivity.this, TransferActivity.class);
+            b.putBoolean(I_AM_THE_SERVER, true);
+            b.putStringArrayList(MESSAGES, groupsOfKeys);
+            intent.putExtras(b);
 
-
-        // Keys EditTexts
-        numberOfKeysEditText = (EditText)findViewById(R.id.numberOfKeys);
-        keysPerQREditText = (EditText)findViewById(R.id.keysPerQR);
-
-
-        // Create and send keys (Server) button
-        Button sendKeysButton = (Button)findViewById(R.id.sendKeys);
-        sendKeysButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (MyUtils.isValid(userToEdit.getUsername()) &&
-                    MyUtils.isValid(numberOfKeysEditText.getText().toString()) &&
-                    MyUtils.isValid(keysPerQREditText.getText().toString())) {
-
-                    int numberOfKeys = Integer.valueOf(numberOfKeysEditText.getText().toString());
-                    int keysPerQR = Integer.valueOf(String.valueOf(keysPerQREditText.getText().toString()));
-
-                    if ((numberOfKeys > 0) && (keysPerQR > 0)) {
-                        // Generate the keys
-                        if (selectedGenerator == R.id.radioTRNG){
-                            // TRNG selected (Read from external text file)
-                            keys = new MyUtils().readOneTimePadsFromSD(numberOfKeys, PADS_LENGTH);
-
-                        } else {
-                            // Generate from CSPRNG (SecureRandom)
-                            keys = new MyUtils().generateOneTimePads(numberOfKeys, PADS_LENGTH);
-                        }
-
-                        if (keys != null) {
-                            // Group the generated keys
-                            groupsOfKeys = MyUtils.encodeGroupsOfKeys(keys, keysPerQR);
-
-                            // Set up the QR TransferActivity
-                            Bundle b = new Bundle();
-                            Intent intent = new Intent(UsersEditorActivity.this, TransferActivity.class);
-                            b.putBoolean(I_AM_THE_SERVER, true);
-                            b.putStringArrayList(MESSAGES, groupsOfKeys);
-                            intent.putExtras(b);
-
-                            // Start the activity for result
-                            startActivityForResult(intent, KEY_EXCHANGE_REQUEST_CODE);
-
-                        } else {
-                            // Error: keys not created!
-                            Toast.makeText(UsersEditorActivity.this, R.string.error_keys_generation, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        // Error: numbers must be > 0
-                        Toast.makeText(UsersEditorActivity.this, R.string.error_negative_num, Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    // Error: the username is not valid
-                    Toast.makeText(UsersEditorActivity.this, R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-        // Read keys (Client) button
-        Button readKeysButton = (Button) findViewById(R.id.readKeys);
-        readKeysButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (MyUtils.isValid(userToEdit.getUsername())) {
-
-                    // Set up the QR TransferActivity
-                    Intent intent = new Intent(UsersEditorActivity.this, TransferActivity.class);
-                    intent.putExtra(I_AM_THE_SERVER, false);
-
-                    // Start the activity for result
-                    startActivityForResult(intent, KEY_EXCHANGE_REQUEST_CODE);
-
-                } else {
-                    // Error: the username is not valid
-                    Toast.makeText(UsersEditorActivity.this, R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-        // Edit the layout in case that a new user must be edited or a new one created
-        if (activityRequestType.equals(EDIT_USERS)){
-            // Toolbar title
-            getSupportActionBar().setTitle(R.string.edit_user);
-
-            // Update username EditText and avatar ImageView
-            usernameEditText.setText(userToEdit.getUsername());
-            avatarImageView.setImageResource(userToEdit.getAvatar());
-
-            // Set some elements as invisible
-            sendKeysButton.setVisibility(View.GONE);
-            readKeysButton.setVisibility(View.GONE);
-            findViewById(R.id.labelNumberOfKeys).setVisibility(View.GONE);
-            findViewById(R.id.labelKeysPerQR).setVisibility(View.GONE);
-            numberOfKeysEditText.setVisibility(View.GONE);
-            keysPerQREditText.setVisibility(View.GONE);
-            radioGroup.setVisibility(View.GONE);
+            // Start the activity for result
+            startActivityForResult(intent, KEY_EXCHANGE_REQUEST_CODE);
 
         } else {
-            // Toolbar title
-            getSupportActionBar().setTitle(R.string.new_user);
-
-            // Set the Toolbar bottom as invisible
-            findViewById(R.id.bottomToolbar).setVisibility(View.GONE);
+            // Error: keys not created!
+            Toast.makeText(UsersEditorActivity.this, R.string.error_keys_generation, Toast.LENGTH_SHORT).show();
         }
     }
 
 
-
-    /** Edit the Toolbars */
+    /**
+     * Edit the Toolbars.
+     */
     private void initToolbars() {
         // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
         setSupportActionBar(toolbarTop);
+        getSupportActionBar().setTitle(
+                activityRequestType.equals(EDIT_USERS) ? R.string.edit_user : R.string.new_user
+        );
 
         // Toolbar BOTTOM
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.bottomToolbar);
@@ -319,9 +198,8 @@ public class UsersEditorActivity extends AppCompatActivity implements
                 return true;
             }
         });
+        toolbarBottom.setVisibility(activityRequestType.equals(EDIT_USERS) ? View.VISIBLE : View.GONE);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -339,15 +217,13 @@ public class UsersEditorActivity extends AppCompatActivity implements
                 // Save the AssociatedUser to DB
                 if (MyUtils.isValid(userToEdit.getUsername())) {
                     dbRequest = DB_REQUEST_UPDATE_USER;
-                    dbUtils.updateUser(userToEdit, passphrase);
+                    dbUtils.updateUser(userToEdit, passphrase, this);
                 }
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -360,7 +236,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
                 // Show a completion message
                 Toast.makeText(getApplicationContext(), R.string.operation_ok, Toast.LENGTH_SHORT).show();
 
-                if (!data.getBooleanExtra(I_AM_THE_SERVER, false)){
+                if (!data.getBooleanExtra(I_AM_THE_SERVER, false)) {
                     // I'm the client, read the incoming messages.
                     // Decode the groups of keys and store them into "keys".
                     groupsOfKeys = data.getStringArrayListExtra(MESSAGES);
@@ -370,15 +246,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
                 // At this point Server and Client have set the right AssociatedUser and exchanged the keys.
                 // Proceed saving the AssociatedUser and keys into DB.
                 dbRequest = DB_REQUEST_SAVE_USER;
-                dbUtils.saveAssociatedUser(userToEdit, keys, passphrase);
-
-                //TMP
-                //Toast.makeText(getApplicationContext(), "COPIATO TUTTO IN DB", Toast.LENGTH_SHORT).show();
-                //users = new MyUtils().loadAssociatedUsers(getApplicationContext());
-                //MyUtils.printUsers(users, output);
-                //TextView output = (TextView)findViewById(R.id.output);
-                //MyUtils.printOtpKeys(keys, output);
-                //TMP
+                dbUtils.saveAssociatedUser(userToEdit, keys, passphrase, this);
 
             } else {
                 // Error during keys exchange
@@ -387,85 +255,51 @@ public class UsersEditorActivity extends AppCompatActivity implements
         }
     }
 
-
-
-    /** Show new dialog. */
-    public void showNewDialog(int dialogType){
+    /**
+     * Show new dialog.
+     */
+    public void showNewDialog(int dialogType) {
         switch (dialogType) {
             case DIALOG_TYPE_CONFIRM_DELETE:
                 // Confirm delete Dialog.
-                DialogFragment dialog = MyAlertDialogFragment.newInstance(
+                DialogFragment dialog = SimpleAlertDialogFragment.newInstance(
                         dialogType,
                         getResources().getString(R.string.delete_contact_req), null);
                 dialog.show(getSupportFragmentManager(), TAG_DIALOG);
                 break;
-
-            case DIALOG_TYPE_AVATAR_PICKER:
-                // Show the Avatar Picker Dialog.
-                showAvatarPickerDialog();
-                break;
         }
     }
 
-    /** A positive button has been clicked */
-    public void doPositiveClick(int dialogType, char[] result){
+    /**
+     * A positive button has been clicked
+     */
+    public void doPositiveClick(int dialogType, char[] result) {
         switch (dialogType) {
             case DIALOG_TYPE_CONFIRM_DELETE:
                 // Delete the AssociatedUser from DB.
                 dbRequest = DB_REQUEST_DELETE_USER;
-                dbUtils.deleteUser(userToEdit, passphrase);
+                dbUtils.deleteUser(userToEdit, passphrase, this);
                 break;
         }
     }
 
-    /** A negative button has been clicked */
-    public void doNegativeClick(int dialogType, char[] result){
+    /**
+     * A negative button has been clicked
+     */
+    public void doNegativeClick(int dialogType, char[] result) {
         // do nothing
     }
-
-
-
-    /**
-     * Show new Avatar Picker Dialog
-     */
-    private void showAvatarPickerDialog() {
-        // Inflate the AlertDialog Layout
-        View view = getLayoutInflater().inflate(R.layout.grid_layout, null);
-        final GridView gridView = (GridView) view.findViewById(R.id.gridView);
-
-        final AvatarImageAdapter adapter = new AvatarImageAdapter(this);
-        gridView.setAdapter(adapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Avatar selected!
-                // Update the AssociatedUser and the ImageView.
-                // than dismiss the Dialog.
-                userToEdit.setAvatar(adapter.getImage(position));
-                avatarImageView.setImageResource(adapter.getImage(position));
-                avatarDialog.dismiss();
-            }
-        });
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(view);
-        builder.setTitle(R.string.pick_avatar);
-        avatarDialog = builder.create();
-        avatarDialog.show();
-    }
-
-
 
     /**
      * A Database operation has finished.
      *
      * @param result success or failure of database operation.
      */
-    public void onDBResponse(boolean result){
-        if (result){
+    public void onDBResponse(boolean result) {
+        if (result) {
             // DB Operation OK
             Toast.makeText(getApplicationContext(), R.string.operation_ok, Toast.LENGTH_SHORT).show();
-            switch (dbRequest){
+            switch (dbRequest) {
                 case DB_REQUEST_DELETE_USER:
                 case DB_REQUEST_UPDATE_USER:
                     finish();
@@ -485,5 +319,6 @@ public class UsersEditorActivity extends AppCompatActivity implements
      *
      * @param result the ArrayList of associated users.
      */
-    public void onDBResponse(ArrayList<AssociatedUser> result){}
+    public void onDBResponse(ArrayList<AssociatedUser> result) {
+    }
 }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2016 Riccardo Leschiutta.
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 Riccardo Leschiutta.
 
     This file is part of Parappnoid.
 
@@ -22,138 +21,110 @@
 
     <!-- Username -->
     <TextView
-        android:id="@+id/labelUsername"
+        android:id="@+id/label_username"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_below="@id/toolbar_top"
         android:gravity="center"
-        android:text="@string/username"/>
+        android:text="@string/username" />
 
     <EditText
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_below="@id/toolbar_top"
-        android:layout_toRightOf="@id/labelUsername"
+        android:layout_toRightOf="@id/label_username"
         android:singleLine="true"
-        android:textColor="#000"/>
-
-
+        android:textColor="@color/black" />
 
     <!-- Avatar -->
     <TextView
-        android:id="@+id/labelAvatar"
+        android:id="@+id/label_avatar"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_below="@id/username"
+        android:layout_below="@id/label_username"
         android:gravity="center"
-        android:text="@string/avatar"/>
+        android:text="@string/avatar" />
 
     <ImageView
         android:id="@+id/avatar"
-        android:src="@drawable/avatar0"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_alignLeft="@id/username"
         android:layout_below="@id/username"
-        android:layout_alignLeft="@id/username"/>
+        android:src="@drawable/avatar0" />
 
-
-    <!-- Keys generation radio buttons -->
+    <!-- CLIENT/SERVER radio buttons chooser -->
     <RadioGroup
-        android:id="@+id/radioGroup"
+        android:id="@+id/radio_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/avatar">
 
         <RadioButton
-            android:id="@+id/radioTRNG"
+            android:id="@+id/radio_server"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/generator_trng"
-            android:checked="true" />
+            android:text="SONO SERVER" />
 
         <RadioButton
-            android:id="@+id/radioCSPRNG"
+            android:id="@+id/radio_client"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/generator_csprng" />
+            android:text="SONO CLIENT" />
+
     </RadioGroup>
 
-
-    <!-- Number of Keys -->
-    <TextView
-        android:id="@+id/labelNumberOfKeys"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_below="@id/radioGroup"
-        android:gravity="center"
-        android:text="@string/number_keys"/>
-
-    <EditText
-        android:id="@+id/numberOfKeys"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@id/radioGroup"
-        android:layout_toRightOf="@id/labelNumberOfKeys"
-        android:singleLine="true"
-        android:inputType="number"
-        android:textColor="#000"/>
-
-
-
-    <!-- Keys per QR -->
-    <TextView
-        android:id="@+id/labelKeysPerQR"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_below="@id/labelNumberOfKeys"
-        android:gravity="center"
-        android:text="@string/keys_per_qr"/>
-
-    <EditText
-        android:id="@+id/keysPerQR"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@id/numberOfKeys"
-        android:layout_toRightOf="@id/labelKeysPerQR"
-        android:singleLine="true"
-        android:inputType="number"
-        android:textColor="#000"/>
-
-
-
-    <Button
-        android:id="@+id/sendKeys"
+    <!-- Server fields only -->
+    <RelativeLayout
+        android:id="@+id/server_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/keysPerQR"
-        android:gravity="center"
-        android:text="@string/send_server"/>
+        android:layout_below="@id/radio_group">
 
-    <Button
-        android:id="@+id/readKeys"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/sendKeys"
-        android:gravity="center"
-        android:text="@string/receive_client"/>
-
-
-
-    <!-- Riempitivo -->
-    <!-- TMP, basta eliminare la textview dentro la ScrollView e
-    e lasciare la ScrollView -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/readKeys"
-        android:layout_above="@id/toolbar_bottom">
-
+        <!-- Number of Keys -->
         <TextView
-            android:id="@+id/output"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:id="@+id/label_n_keys"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="@string/number_keys" />
 
-    </ScrollView>
+        <EditText
+            android:id="@+id/n_keys"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_toRightOf="@id/label_n_keys"
+            android:inputType="number"
+            android:singleLine="true"
+            android:textColor="@color/black" />
+
+        <!-- Keys per QR -->
+        <TextView
+            android:id="@+id/label_keys_per_qr"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_below="@id/label_n_keys"
+            android:gravity="center"
+            android:text="@string/keys_per_qr" />
+
+        <EditText
+            android:id="@+id/keys_per_qr"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/n_keys"
+            android:layout_toRightOf="@id/label_keys_per_qr"
+            android:inputType="number"
+            android:singleLine="true"
+            android:textColor="@color/black" />
+
+    </RelativeLayout>
+
+    <!-- Associate button -->
+    <Button
+        android:id="@+id/associate_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/server_area"
+        android:gravity="center"
+        android:text="VAI" />
 
 </RelativeLayout>

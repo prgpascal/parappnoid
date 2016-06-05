@@ -56,7 +56,7 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELE
  * Activity instantiated when a message arrived and must be decrypted.
  */
 public class ReadMessageActivity extends AppCompatActivity implements
-        DBUtils.DBResponseListener {
+        DBUtils.DbResponseCallback {
 
     private String hexCiphertext;               // Original incoming message (HEX String).
     private String plaintext;                   // The plaintext
@@ -68,8 +68,7 @@ public class ReadMessageActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Instantiate the DBUtils object
-        dbUtils = DBUtils.getNewInstance(ReadMessageActivity.this); //TODO singleton
+        dbUtils = DBUtils.getInstance(getApplicationContext());
 
         // Check the Intent Action.
         // It must be an ACTION_VIEW.
@@ -273,7 +272,7 @@ public class ReadMessageActivity extends AppCompatActivity implements
             // Important!
             // Delete the keys
             keys.remove(padID);
-            dbUtils.deleteOtp(selectedUser.getUserID(), "D", padID, passphrase);
+            dbUtils.deleteOtp(selectedUser.getUserID(), "D", padID, passphrase, this);
 
             return plaintext;
 
