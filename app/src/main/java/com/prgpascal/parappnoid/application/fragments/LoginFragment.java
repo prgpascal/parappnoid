@@ -6,6 +6,8 @@ import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,7 +16,7 @@ import android.widget.Toast;
 import com.prgpascal.parappnoid.R;
 
 /**
- * Created by prgpascal on 02/06/2016.
+ * Fragment that provides login features to the user.
  */
 public class LoginFragment extends Fragment {
     private ImageView logoImage;
@@ -22,8 +24,7 @@ public class LoginFragment extends Fragment {
     private Button loginButton;
 
     public static LoginFragment newInstance() {
-        LoginFragment loginFragment = new LoginFragment();
-        return loginFragment;
+        return new LoginFragment();
     }
 
     @Override
@@ -61,12 +62,13 @@ public class LoginFragment extends Fragment {
     }
 
     /**
-     * Called when the user has inserted the wrong passphrase.
+     * Called when the user inserts a wrong passphrase. It shows an animation.
      */
     public void wrongPassphraseInserted() {
-        Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).show();
-        //TODO show animation
-
+        Toast.makeText(getActivity(), R.string.error_wrong_passphrase, Toast.LENGTH_SHORT).show();
+        Animation errorAnimation = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.field_error_anim);
+        passphraseEditText.startAnimation(errorAnimation);
+        logoImage.startAnimation(errorAnimation);
     }
 
     public interface LoginFragmentInterface {

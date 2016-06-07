@@ -18,7 +18,8 @@ import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.adapters.AvatarImageAdapter;
 
 /**
- * Created by prgpascal on 04/06/2016.
+ * Fragment that allows the user to edit the information about an AssociatedUser, or to create
+ * a new one.
  */
 public class UsersEditorFragment extends Fragment {
     private EditText usernameEditText;
@@ -80,18 +81,17 @@ public class UsersEditorFragment extends Fragment {
             public void onClick(View view) {
                 switch (radioGroup.getCheckedRadioButtonId()) {
                     case R.id.radio_client:
-                        performClient();
+                        performClientOperation();
                         break;
                     case R.id.radio_server:
-                        performServer();
+                        performServerOperation();
                         break;
                 }
             }
         });
     }
 
-    private void performClient() {
-        // Get the values
+    private void performClientOperation() {
         String username = usernameEditText.getText().toString();
         int avatar = selectedAvatar;
 
@@ -99,8 +99,7 @@ public class UsersEditorFragment extends Fragment {
         // Send to the activity
     }
 
-
-    private void performServer() {
+    private void performServerOperation() {
         // Get the values
         String username = usernameEditText.getText().toString();
         int avatar = selectedAvatar;
@@ -118,12 +117,9 @@ public class UsersEditorFragment extends Fragment {
 //        // Error: the username is not valid
 //        Toast.makeText(UsersEditorActivity.this, R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
 //        }
-        // Send to the activity
+        // TODO Send to the activity
     }
 
-    /**
-     * Show new Avatar Picker Dialog.
-     */
     private void showAvatarPickerDialog() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.grid_layout, null);
         final GridView gridView = (GridView) view.findViewById(R.id.gridView);

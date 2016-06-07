@@ -14,7 +14,7 @@ import com.prgpascal.parappnoid.application.activities.SettingsEditorActivity.Wr
 import com.prgpascal.parappnoid.utils.MyUtils;
 
 /**
- * Created by prgpascal on 04/06/2016.
+ * Fragment that display the Parappnoid settings, and allow the user to edit them.
  */
 public class SettingsEditorFragment extends Fragment implements
         SettingsEditorInterface {

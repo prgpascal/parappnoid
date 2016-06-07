@@ -37,98 +37,80 @@ import java.util.ArrayList;
 import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.PICK_USER;
 
 /**
- * Adapter for the RecyclerView, used for showing the associated users.
+ * Adapter for the RecyclerView, used to show the associated users.
  */
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    private ArrayList<AssociatedUser> users;    // Dataset used for populate the RecyclerView
+    private ArrayList<AssociatedUser> users;    // Dataset used to populate the RecyclerView.
     private UsersListActivity activity;         // Activity reference
 
-
-    /** Provide a reference to the views for each data item */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public RelativeLayout layout;
-        
+
         public ViewHolder(RelativeLayout v) {
             super(v);
             layout = v;
-        }  
+        }
     }
-   
 
-    /** Constructor */
     public RecyclerViewAdapter(ArrayList<AssociatedUser> users, Context context) {
         this.users = users;
         activity = (UsersListActivity) context;
     }
 
-    
-    
-    /** Create new views */
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Create a new item
+        // Create a new list item
         RelativeLayout v = (RelativeLayout) LayoutInflater.from(parent.getContext())
-                               .inflate(R.layout.users_list_item, parent, false);
+                .inflate(R.layout.users_list_item, parent, false);
 
         return new ViewHolder(v);
     }
-    
 
-    
+    @Override
+    public int getItemCount() {
+        return users.size();
+    }
+
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-    	// Edit the contents of the views with the right AssociatedUser information.
+        // Edit the contents of the views with the correct AssociatedUser info.
         AssociatedUser user = users.get(position);
 
-        ((ImageView)holder.layout.findViewById(R.id.avatar)).setImageResource(user.getAvatar());
-    	((TextView)holder.layout.findViewById(R.id.username)).setText(user.getUsername());
-        ((TextView)holder.layout.findViewById(R.id.keysAvailable1)).setText(
+        ((ImageView) holder.layout.findViewById(R.id.avatar)).setImageResource(user.getAvatar());
+        ((TextView) holder.layout.findViewById(R.id.username)).setText(user.getUsername());
+        ((TextView) holder.layout.findViewById(R.id.keysAvailable1)).setText(
                 activity.getResources().getString(R.string.encryption_keys) +
-                user.getEncryptionKeys().size());
-        ((TextView)holder.layout.findViewById(R.id.keysAvailable2)).setText(
+                        user.getEncryptionKeys().size());
+        ((TextView) holder.layout.findViewById(R.id.keysAvailable2)).setText(
                 activity.getResources().getString(R.string.decryption_keys) +
-                user.getDecryptionKeys().size());
+                        user.getDecryptionKeys().size());
 
-        // Hide some elements if not necessary for the Activity purpose.
-        // Handle onClick events related to the Activity purpose.
+        // Hide some elements if not necessary and handle onClick events.
         if (activity.activityRequestType.equals(PICK_USER)) {
             (holder.layout.findViewById(R.id.keysAvailable2)).setVisibility(View.GONE);
             (holder.layout.findViewById(R.id.edit)).setVisibility(View.GONE);
 
-            // Handle the clicks on this list item.
             (holder.layout.findViewById(R.id.container)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // User picked
                     activity.userSelected(users.get(position));
                 }
             });
 
         } else {
-            // Handle the clicks on this list item.
             (holder.layout.findViewById(R.id.container)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // User picked
                     activity.userSelected(users.get(position));
                 }
             });
 
-            // Handle the clicks on the Edit button of this list item.
             (holder.layout.findViewById(R.id.edit)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // User to be edited selected
                     activity.userSelected(users.get(position));
                 }
             });
         }
-    }
-
-
-    /** Return the size of the dataset (invoked by the layout manager) */
-    @Override
-    public int getItemCount() {
-        return users.size();
     }
 }

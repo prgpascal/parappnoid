@@ -16,11 +16,11 @@ import com.prgpascal.parappnoid.utils.MyNotificationManager;
 import static com.prgpascal.parappnoid.utils.Constants.PREFERENCES;
 
 /**
- * Created by prgpascal on 04/06/2016.
+ * PreferenceFragment that allows the user to edit some of Parappnoid settings.
  */
 public class SettingsFragment extends PreferenceFragment {
 
-    public static SettingsFragment newInstance(){
+    public static SettingsFragment newInstance() {
         return new SettingsFragment();
     }
 
@@ -37,12 +37,7 @@ public class SettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.user_preferences);
     }
 
-
-    /**
-     * Capture the click events on Preference buttons
-     */
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-
         /** Show notifications */
         if (preference.getKey().matches("show_notification")) {
             CheckBoxPreference pref = (CheckBoxPreference) preference;

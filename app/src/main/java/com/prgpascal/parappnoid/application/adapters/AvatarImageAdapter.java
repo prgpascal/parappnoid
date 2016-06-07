@@ -26,21 +26,19 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 /**
- * ImageAdapter for the avatar selection GridView.
+ * ImageAdapter for the avatar selection.
  */
 public class AvatarImageAdapter extends BaseAdapter {
-    private Context context;                            // Activity context
-    private Integer[] imagesRes;                        // Resource identifiers for the images
-    private static final int AVATARS_AVAILABLE = 47;    // Number of available avatars
+    private Context context;                            // Activity context.
+    private Integer[] imagesRes;                        // Resource identifiers for the images.
+    private static final int AVATARS_AVAILABLE = 47;    // Number of available avatars.
 
-
-    /** Constructor */
     public AvatarImageAdapter(Context context) {
         this.context = context;
 
-        // Instantiate and populate the images resource identifiers
+        // Instantiate and populate the images res array
         imagesRes = new Integer[AVATARS_AVAILABLE];
-        for (int i=0; i<AVATARS_AVAILABLE; i++){
+        for (int i = 0; i < AVATARS_AVAILABLE; i++) {
             imagesRes[i] = context.getResources().getIdentifier(
                     "avatar" + i,
                     "drawable",
@@ -48,19 +46,25 @@ public class AvatarImageAdapter extends BaseAdapter {
         }
     }
 
+    @Override
     public int getCount() {
         return imagesRes.length;
     }
 
+    @Override
     public Object getItem(int position) {
         return position;
     }
 
+    @Override
     public long getItemId(int position) {
         return position;
     }
 
-    public int getImage(int position){
+    /**
+     * Return the image at the specified position
+     */
+    public int getImage(int position) {
         return imagesRes[position];
     }
 

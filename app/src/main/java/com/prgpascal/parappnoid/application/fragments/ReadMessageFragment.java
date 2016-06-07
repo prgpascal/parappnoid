@@ -11,12 +11,12 @@ import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.activities.ReadMessageActivity;
 
 /**
- * Created by prgpascal on 04/06/2016.
+ * Fragment that allows the user to read a cleartext message.
  */
-public class ReadMessageFragment extends Fragment implements ReadMessageActivity.ReadMessageInterface{
+public class ReadMessageFragment extends Fragment implements ReadMessageActivity.ReadMessageInterface {
     private TextView messageContent;
 
-    public static ReadMessageFragment newInstance(){
+    public static ReadMessageFragment newInstance() {
         return new ReadMessageFragment();
     }
 
@@ -33,7 +33,7 @@ public class ReadMessageFragment extends Fragment implements ReadMessageActivity
     }
 
     @Override
-    public void setMesageContent(String s) {
+    public void setMessageContent(String s) {
         messageContent.setText(s);
     }
 }

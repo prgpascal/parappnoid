@@ -290,12 +290,12 @@ public class ReadMessageActivity extends AppCompatActivity implements
             // DB Operation OK
             // Show the decrypted message (or error) to the user.
             ReadMessageInterface frag = (ReadMessageInterface) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            frag.setMesageContent(plaintext);
+            frag.setMessageContent(plaintext);
 
         } else {
             // DB Operation Error
             ReadMessageInterface frag = (ReadMessageInterface) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            frag.setMesageContent(getResources().getString(R.string.error));
+            frag.setMessageContent(getResources().getString(R.string.error));
         }
     }
 
@@ -309,6 +309,6 @@ public class ReadMessageActivity extends AppCompatActivity implements
     }
 
     public interface ReadMessageInterface {
-        void setMesageContent(String s);
+        void setMessageContent(String s);
     }
 }

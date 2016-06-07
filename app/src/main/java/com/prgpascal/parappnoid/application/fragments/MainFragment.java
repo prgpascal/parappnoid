@@ -10,16 +10,15 @@ import android.widget.Button;
 import com.prgpascal.parappnoid.R;
 
 /**
- * Created by prgpascal on 02/06/2016.
+ * Fragment that allows the user to choose a feature (for example write/read a message).
  */
 public class MainFragment extends Fragment {
     private Button writeMessageButton;
-    private Button contactsButton;
     private Button readMessageButton;
+    private Button contactsButton;
 
     public static MainFragment newInstance() {
-        MainFragment loginFragment = new MainFragment();
-        return loginFragment;
+        return new MainFragment();
     }
 
     @Override
@@ -31,8 +30,8 @@ public class MainFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         writeMessageButton = (Button) rootView.findViewById(R.id.write_message_btn);
-        contactsButton = (Button) rootView.findViewById(R.id.contacts_btn);
         readMessageButton = (Button) rootView.findViewById(R.id.read_message_btn);
+        contactsButton = (Button) rootView.findViewById(R.id.contacts_btn);
 
         return rootView;
     }
@@ -44,8 +43,8 @@ public class MainFragment extends Fragment {
         MyOnClickListener onClickListener = new MyOnClickListener();
 
         writeMessageButton.setOnClickListener(onClickListener);
-        contactsButton.setOnClickListener(onClickListener);
         readMessageButton.setOnClickListener(onClickListener);
+        contactsButton.setOnClickListener(onClickListener);
     }
 
     class MyOnClickListener implements View.OnClickListener {

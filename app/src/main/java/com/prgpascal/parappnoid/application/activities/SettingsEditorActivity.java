@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.MainFragment;
+import com.prgpascal.parappnoid.application.fragments.SettingsEditorFragment;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 import com.prgpascal.parappnoid.utils.DBUtils;
 import com.prgpascal.parappnoid.utils.MyProgressDialogManager;
@@ -58,7 +59,7 @@ public class SettingsEditorActivity extends AppCompatActivity implements
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top);
 
-        Fragment fragment = MainFragment.newInstance();
+        Fragment fragment = SettingsEditorFragment.newInstance();
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         trans.replace(R.id.fragment_container, fragment);
         trans.commit();

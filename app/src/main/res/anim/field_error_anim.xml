@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2008 The Android Open Source Project
+	 Copyright 2014 Riccardo Leschiutta [www.riccardoleschiutta.com].
+
+	 Social icons credit:
+	 - Link: http://vervex.deviantart.com/art/Somacro-45-300DPI-Social-Media-Icons-267955425 
+	 - License: CC BY 3.0
+ 
+	 Android Holo widgets credit:
+	 - Link: http://android-holo-colors.com/
+	 - License: CC BY 3.0
+		 
+	 CC BY 3.0 License: http://creativecommons.org/licenses/by/3.0/
+-->
+
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <translate 
+        android:fromXDelta="-15.0" 
+        android:toXDelta="15.0" 
+        android:repeatCount="4"
+        android:repeatMode="reverse"
+        android:duration="100"/>
+</set>
