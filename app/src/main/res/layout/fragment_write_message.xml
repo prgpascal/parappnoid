@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2016 Riccardo Leschiutta.
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 Riccardo Leschiutta.
 
     This file is part of Parappnoid.
 
@@ -18,45 +17,28 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
 
     <!-- Message Content -->
     <EditText
         android:id="@+id/messageContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar_top"
         android:gravity="clip_horizontal"
         android:hint="@string/type_text"
-        android:textColor="#000"/>
+        android:textColor="@color/black" />
 
     <!-- Message length counter -->
     <TextView
         android:id="@+id/messageLengthCounter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/toolbar_bottom"
+        android:layout_below="@id/messageContent"
         android:layout_alignParentRight="true"
         android:padding="5dp"
-        android:textSize="15dp"
         android:text=""
-        android:textColor="#000"/>
-
-
-    <!-- Riempitivo -->
-    <!-- TMP, basta eliminare la textview dentro la ScrollView e
-    e lasciare la ScrollView -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/messageContent"
-        android:layout_above="@id/toolbar_bottom">
-
-        <TextView
-            android:id="@+id/output"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </ScrollView>
+        android:textColor="@color/black"
+        android:textSize="15dp" />
 
 </RelativeLayout>

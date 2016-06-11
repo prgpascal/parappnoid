@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.activities.SettingsEditorActivity;
 import com.prgpascal.parappnoid.application.adapters.AvatarImageAdapter;
 import com.prgpascal.parappnoid.utils.MyUtils;
 
@@ -35,12 +36,23 @@ public class UsersEditorFragment extends Fragment {
     private int selectedAvatar = R.drawable.avatar0;
     private AlertDialog avatarDialog;
 
-    private boolean mIsEditUserRequestType;
-    private static final String IS_EDIT_USER_REQ_TYPE = "is_edit_user_req_type";
+    private static final String TAG_USERNAME = "username";
+    private static final String TAG_AVATAR = "avatar";
+    private static final String TAG_IS_EDIT_USER_REQ_TYPE = "is_edit_user_req_type";
 
-    public static UsersEditorFragment newInstance(boolean isEditUserRequestType) {
+    public static UsersEditorFragment newInstance() {
         Bundle b = new Bundle();
-        b.putBoolean(IS_EDIT_USER_REQ_TYPE, isEditUserRequestType);
+        b.putBoolean(TAG_IS_EDIT_USER_REQ_TYPE, false);
+        UsersEditorFragment fragment = new UsersEditorFragment();
+        fragment.setArguments(b);
+        return fragment;
+    }
+
+    public static UsersEditorFragment newInstance(String username, int avatar) {
+        Bundle b = new Bundle();
+        b.putBoolean(TAG_IS_EDIT_USER_REQ_TYPE, true);
+        b.putString(TAG_USERNAME, username);
+        b.putInt(TAG_AVATAR, avatar);
         UsersEditorFragment fragment = new UsersEditorFragment();
         fragment.setArguments(b);
         return fragment;
@@ -69,7 +81,12 @@ public class UsersEditorFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mIsEditUserRequestType = getArguments().getBoolean(IS_EDIT_USER_REQ_TYPE, false);
+        boolean mIsEditUserRequestType = getArguments().getBoolean(TAG_IS_EDIT_USER_REQ_TYPE, false);
+        if (mIsEditUserRequestType) {
+            usernameEditText.setText(getArguments().getString(TAG_USERNAME));
+            selectedAvatar = getArguments().getInt(TAG_AVATAR);
+            avatarImageView.setImageResource(selectedAvatar);
+        }
 
         avatarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,39 +107,35 @@ public class UsersEditorFragment extends Fragment {
         associateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mIsEditUserRequestType) {
-                    performSaveUser();
-
-                } else {
-                    switch (radioGroup.getCheckedRadioButtonId()) {
-                        case R.id.radio_client:
-                            performClientOperation();
-                            break;
-                        case R.id.radio_server:
-                            performServerOperation();
-                            break;
-                    }
+                switch (radioGroup.getCheckedRadioButtonId()) {
+                    case R.id.radio_client:
+                        performClientOperation();
+                        break;
+                    case R.id.radio_server:
+                        performServerOperation();
+                        break;
                 }
             }
         });
 
         // Hide some elements..
-        if (mIsEditUserRequestType){
+        if (mIsEditUserRequestType) {
+            associateButton.setVisibility(View.GONE);
             radioGroup.setVisibility(View.GONE);
             serverArea.setVisibility(View.GONE);
         }
     }
 
-    private void performSaveUser(){
+    public String getUsername() throws SettingsEditorActivity.WrongFieldException {
         String username = usernameEditText.getText().toString();
-        int avatar = selectedAvatar;
-
-        if (MyUtils.isValid(username)) {
-            ((UsersEditorInterface) getActivity()).saveUser(username, avatar);
-
-        } else {
-            Toast.makeText(getActivity(), R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
+        if (!MyUtils.isValid(username)) {
+            throw new SettingsEditorActivity.WrongFieldException();
         }
+        return username;
+    }
+
+    public int getAvatar() throws SettingsEditorActivity.WrongFieldException {
+        return selectedAvatar;
     }
 
     private void performClientOperation() {
@@ -181,7 +194,7 @@ public class UsersEditorFragment extends Fragment {
     }
 
     public interface UsersEditorInterface {
-        void saveUser(String username, int avatar);
+        void saveUser();
 
         void performClientRequest(String username, int avatar);
 

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:orientation="vertical">
@@ -13,20 +14,26 @@
             android:id="@+id/logo"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@mipmap/ic_launcher"/>
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_launcher" />
 
         <EditText
             android:id="@+id/passphrase_edit_text"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:singleLine="true"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
 
         <Button
             android:id="@+id/login_button"
-            android:layout_width="70dp"
-            android:layout_height="45dp"
-            android:text="Login"/>
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@color/colorAccent"
+            android:text="Login"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 

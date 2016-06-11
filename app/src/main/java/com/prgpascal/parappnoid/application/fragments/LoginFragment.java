@@ -68,7 +68,6 @@ public class LoginFragment extends Fragment {
         Toast.makeText(getActivity(), R.string.error_wrong_passphrase, Toast.LENGTH_SHORT).show();
         Animation errorAnimation = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.field_error_anim);
         passphraseEditText.startAnimation(errorAnimation);
-        logoImage.startAnimation(errorAnimation);
     }
 
     public interface LoginFragmentInterface {

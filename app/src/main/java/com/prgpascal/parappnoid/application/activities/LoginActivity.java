@@ -67,7 +67,8 @@ public class LoginActivity extends AppCompatActivity implements
             finish();
 
         } else {
-            Toast.makeText(getApplicationContext(), "" + result, Toast.LENGTH_SHORT).show();
+            LoginFragment fragment = (LoginFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            fragment.wrongPassphraseInserted();
         }
     }
 

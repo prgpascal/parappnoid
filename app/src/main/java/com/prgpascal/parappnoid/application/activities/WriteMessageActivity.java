@@ -22,6 +22,7 @@ package com.prgpascal.parappnoid.application.activities;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -66,6 +67,8 @@ public class WriteMessageActivity extends AppCompatActivity implements
     private DBUtils dbUtils;                    // Object used for DB operations.
     private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
     private String hexCiphertext;               // HEX version of the ciphertext.
+
+    private FloatingActionButton mFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +136,14 @@ public class WriteMessageActivity extends AppCompatActivity implements
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top_bottom);
 
+        mFab = (FloatingActionButton)findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage();
+            }
+        });
+
         Fragment fragment = WriteMessageFragment.newInstance();
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         trans.replace(R.id.fragment_container, fragment);
@@ -167,7 +178,7 @@ public class WriteMessageActivity extends AppCompatActivity implements
 
         // Toolbar BOTTOM
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.bottomToolbar);
-        toolbarBottom.inflateMenu(R.menu.write_message_bottom_items);
+//        toolbarBottom.inflateMenu(R.menu.write_message_bottom_items);
         toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -179,6 +190,8 @@ public class WriteMessageActivity extends AppCompatActivity implements
                 return true;
             }
         });
+
+        toolbarBottom.setVisibility(View.GONE);
     }
 
     private void sendMessage() {

@@ -16,15 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>. -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-  	android:layout_height="match_parent"
-    android:background="@drawable/background">
-    
-    <android.support.v7.widget.RecyclerView 
-		android:id="@+id/parent"
-	  	android:scrollbars="vertical"
-	  	android:layout_width="match_parent"
-	  	android:layout_height="match_parent"/>
-    
-</RelativeLayout>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/add"
+        android:title="ADD"
+        myapp:showAsAction="always"/>
+</menu>

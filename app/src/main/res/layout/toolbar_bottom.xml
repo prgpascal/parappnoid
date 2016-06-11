@@ -26,7 +26,7 @@
         android:id="@+id/bottomToolbar"
         android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:background="#DDD"
+        android:background="@color/colorPrimaryDark"
         android:theme="@style/AppTheme.BottomToolbar"/>
 
 </LinearLayout>

@@ -26,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -123,8 +124,12 @@ public class UsersEditorActivity extends AppCompatActivity implements
 
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top_bottom);
+        Fragment fragment;
+        if (activityRequestType.equals(EDIT_USERS))
+            fragment = UsersEditorFragment.newInstance(userToEdit.getUsername(), userToEdit.getAvatar());
+        else
+            fragment = UsersEditorFragment.newInstance();
 
-        Fragment fragment = UsersEditorFragment.newInstance(activityRequestType.equals(EDIT_USERS));
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         trans.replace(R.id.fragment_container, fragment);
         trans.commit();
@@ -133,13 +138,37 @@ public class UsersEditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void saveUser(String username, int avatar) {
-        userToEdit.setUsername(username);
-        userToEdit.setAvatar(avatar);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (activityRequestType.equals(EDIT_USERS))
+            getMenuInflater().inflate(R.menu.editor_top_items, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        dbRequest = DB_REQUEST_UPDATE_USER;
-        progressDialog.showProgressDialog(true, this);
-        dbUtils.updateUser(userToEdit, passphrase, this);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save:
+                saveUser();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void saveUser() {
+        try {
+            UsersEditorFragment fragment = (UsersEditorFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            userToEdit.setUsername(fragment.getUsername());
+            userToEdit.setAvatar(fragment.getAvatar());
+
+            dbRequest = DB_REQUEST_UPDATE_USER;
+            progressDialog.showProgressDialog(true, this);
+            dbUtils.updateUser(userToEdit, passphrase, this);
+
+        } catch (SettingsEditorActivity.WrongFieldException e) {
+            Toast.makeText(UsersEditorActivity.this, R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

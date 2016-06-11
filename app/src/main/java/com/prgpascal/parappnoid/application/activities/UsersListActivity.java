@@ -28,6 +28,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -93,6 +95,24 @@ public class UsersListActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (activityRequestType.equals(EDIT_USERS))
+            getMenuInflater().inflate(R.menu.users_list_top_items, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add:
+                createNewUser();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void showNewDialog(int dialogType) {
         switch (dialogType) {
             case DIALOG_TYPE_REQUEST_PASSPHRASE:
@@ -130,24 +150,10 @@ public class UsersListActivity extends AppCompatActivity implements
         trans.replace(R.id.fragment_container, fragment);
         trans.commit();
 
-        // FAB
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createNewUser();
-            }
-        });
-
-        // Hide the FAB if the request type is PICK_USER
-        if (activityRequestType.equals(PICK_USER)) {
-            fab.setVisibility(View.GONE);
-        }
-
         initToolbars();
     }
 
-    private void createNewUser(){
+    private void createNewUser() {
         Intent intent = new Intent(UsersListActivity.this, UsersEditorActivity.class);
         intent.putExtra(ACTIVITY_REQUEST_TYPE, NEW_USER);
         intent.putExtra(PASSPHRASE, passphrase);
