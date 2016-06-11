@@ -26,7 +26,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -61,14 +60,15 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELE
  */
 public class UsersEditorActivity extends AppCompatActivity implements
         MyAlertDialogInterface,
+        UsersEditorFragment.UsersEditorInterface,
         DBUtils.DbResponseCallback {
 
     private AssociatedUser userToEdit;              // The AssociatedUser to be edited or created.
     private HashMap<Integer, OneTimePad> keys;      // Array of generated keys of the specified user.
-    private ArrayList<String> groupsOfKeys;         // Generated keys grouped in Strings.
+    private ArrayList<String> groupsOfKeys;         // Generated keys grouped into Strings.
 
     public String activityRequestType;              // The type of request for this activity: new user or edit an existing one
-    private char[] passphrase;                      // Passphrase inserted by the user
+    private char[] passphrase;                      // Passphrase inserted by the user.
 
     private DBUtils dbUtils;                                // Object used for DB operations
     private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
@@ -78,9 +78,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
     private static final int DB_REQUEST_UPDATE_USER = 2;    //...
     private static final int DB_REQUEST_DELETE_USER = 3;    //...
 
-    int DEFAULT_AVATAR = R.drawable.avatar0;
-
-    // Dialogs request codes
+    private static final int DEFAULT_AVATAR = R.drawable.avatar0;
     private static final int DIALOG_TYPE_CONFIRM_DELETE = 111;
 
     @Override
@@ -126,7 +124,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
     private void createLayout() {
         setContentView(R.layout.activity_toolbar_top_bottom);
 
-        Fragment fragment = UsersEditorFragment.newInstance();
+        Fragment fragment = UsersEditorFragment.newInstance(activityRequestType.equals(EDIT_USERS));
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         trans.replace(R.id.fragment_container, fragment);
         trans.commit();
@@ -134,37 +132,44 @@ public class UsersEditorActivity extends AppCompatActivity implements
         initToolbars();
     }
 
-    public void performClientRequest(String username, int avatar) {
-        //TODO
+    @Override
+    public void saveUser(String username, int avatar) {
         userToEdit.setUsername(username);
         userToEdit.setAvatar(avatar);
 
-        // Start the Activity for keys exchange
+        dbRequest = DB_REQUEST_UPDATE_USER;
+        progressDialog.showProgressDialog(true, this);
+        dbUtils.updateUser(userToEdit, passphrase, this);
+    }
+
+    @Override
+    public void performClientRequest(String username, int avatar) {
+        userToEdit.setUsername(username);
+        userToEdit.setAvatar(avatar);
+
+        // Start the Activity to exchange keys
         Intent intent = new Intent(UsersEditorActivity.this, TransferActivity.class);
         intent.putExtra(I_AM_THE_SERVER, false);
         startActivityForResult(intent, KEY_EXCHANGE_REQUEST_CODE);
     }
 
+    @Override
     public void performServerRequest(String username, int avatar, int numberOfKeys, int keysPerQR) {
-        //TODO
         userToEdit.setUsername(username);
         userToEdit.setAvatar(avatar);
 
         //TODO generate keys by CSPRNG TEMP
         keys = new MyUtils().generateOneTimePads(numberOfKeys, PADS_LENGTH);
+        //TODO generate keys by CSPRNG TEMP
 
         if (keys != null) {
             // Group the generated keys
             groupsOfKeys = MyUtils.encodeGroupsOfKeys(keys, keysPerQR);
 
-            // Set up the QR TransferActivity
-            Bundle b = new Bundle();
+            // Start the Activity to exchange keys
             Intent intent = new Intent(UsersEditorActivity.this, TransferActivity.class);
-            b.putBoolean(I_AM_THE_SERVER, true);
-            b.putStringArrayList(MESSAGES, groupsOfKeys);
-            intent.putExtras(b);
-
-            // Start the activity for result
+            intent.putExtra(I_AM_THE_SERVER, true);
+            intent.putStringArrayListExtra(MESSAGES, groupsOfKeys);
             startActivityForResult(intent, KEY_EXCHANGE_REQUEST_CODE);
 
         } else {
@@ -200,53 +205,20 @@ public class UsersEditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu only if an existing user must be edited
-        if (activityRequestType.equals(EDIT_USERS)) {
-            getMenuInflater().inflate(R.menu.editor_top_items, menu);
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.save:
-                // Save the AssociatedUser to DB
-                if (MyUtils.isValid(userToEdit.getUsername())) {
-                    dbRequest = DB_REQUEST_UPDATE_USER;
-                    progressDialog.showProgressDialog(true, this);
-                    dbUtils.updateUser(userToEdit, passphrase, this);
-                }
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
         if (requestCode == KEY_EXCHANGE_REQUEST_CODE) {
-            // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                // Keys successfully exchanged
-
-                // Show a completion message
-                Toast.makeText(getApplicationContext(), R.string.operation_ok, Toast.LENGTH_SHORT).show();
 
                 if (!data.getBooleanExtra(I_AM_THE_SERVER, false)) {
-                    // I'm the client, read the incoming messages.
-                    // Decode the groups of keys and store them into "keys".
                     groupsOfKeys = data.getStringArrayListExtra(MESSAGES);
                     keys = MyUtils.decodeGroupsOfKeys(groupsOfKeys);
                 }
 
-                // At this point Server and Client have set the right AssociatedUser and exchanged the keys.
-                // Proceed saving the AssociatedUser and keys into DB.
                 dbRequest = DB_REQUEST_SAVE_USER;
                 progressDialog.showProgressDialog(true, this);
                 dbUtils.saveAssociatedUser(userToEdit, keys, passphrase, this);
+
+                Toast.makeText(getApplicationContext(), R.string.operation_ok, Toast.LENGTH_SHORT).show();
 
             } else {
                 // Error during keys exchange

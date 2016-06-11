@@ -13,9 +13,11 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.adapters.AvatarImageAdapter;
+import com.prgpascal.parappnoid.utils.MyUtils;
 
 /**
  * Fragment that allows the user to edit the information about an AssociatedUser, or to create
@@ -30,11 +32,18 @@ public class UsersEditorFragment extends Fragment {
     private EditText keysPerQrEditText;
     private Button associateButton;
 
-    private int selectedAvatar;
+    private int selectedAvatar = R.drawable.avatar0;
     private AlertDialog avatarDialog;
 
-    public static UsersEditorFragment newInstance() {
-        return new UsersEditorFragment();
+    private boolean mIsEditUserRequestType;
+    private static final String IS_EDIT_USER_REQ_TYPE = "is_edit_user_req_type";
+
+    public static UsersEditorFragment newInstance(boolean isEditUserRequestType) {
+        Bundle b = new Bundle();
+        b.putBoolean(IS_EDIT_USER_REQ_TYPE, isEditUserRequestType);
+        UsersEditorFragment fragment = new UsersEditorFragment();
+        fragment.setArguments(b);
+        return fragment;
     }
 
     @Override
@@ -60,6 +69,8 @@ public class UsersEditorFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mIsEditUserRequestType = getArguments().getBoolean(IS_EDIT_USER_REQ_TYPE, false);
+
         avatarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,45 +90,73 @@ public class UsersEditorFragment extends Fragment {
         associateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (radioGroup.getCheckedRadioButtonId()) {
-                    case R.id.radio_client:
-                        performClientOperation();
-                        break;
-                    case R.id.radio_server:
-                        performServerOperation();
-                        break;
+                if (mIsEditUserRequestType) {
+                    performSaveUser();
+
+                } else {
+                    switch (radioGroup.getCheckedRadioButtonId()) {
+                        case R.id.radio_client:
+                            performClientOperation();
+                            break;
+                        case R.id.radio_server:
+                            performServerOperation();
+                            break;
+                    }
                 }
             }
         });
+
+        // Hide some elements..
+        if (mIsEditUserRequestType){
+            radioGroup.setVisibility(View.GONE);
+            serverArea.setVisibility(View.GONE);
+        }
+    }
+
+    private void performSaveUser(){
+        String username = usernameEditText.getText().toString();
+        int avatar = selectedAvatar;
+
+        if (MyUtils.isValid(username)) {
+            ((UsersEditorInterface) getActivity()).saveUser(username, avatar);
+
+        } else {
+            Toast.makeText(getActivity(), R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void performClientOperation() {
         String username = usernameEditText.getText().toString();
         int avatar = selectedAvatar;
 
-        // TODO check the values
-        // Send to the activity
+        if (MyUtils.isValid(username)) {
+            ((UsersEditorInterface) getActivity()).performClientRequest(username, avatar);
+
+        } else {
+            Toast.makeText(getActivity(), R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void performServerOperation() {
-        // Get the values
         String username = usernameEditText.getText().toString();
         int avatar = selectedAvatar;
-        int numberOfKeys = Integer.valueOf(numberOfKeysEditText.getText().toString());
-        int keysPerQR = Integer.valueOf(String.valueOf(keysPerQrEditText.getText().toString()));
+        try {
+            int numberOfKeys = Integer.valueOf(numberOfKeysEditText.getText().toString());
+            int keysPerQR = Integer.valueOf(String.valueOf(keysPerQrEditText.getText().toString()));
 
-        // TODO check the values
-        // Check if valid and >0
-//    } else {
-//        // Error: numbers must be > 0
-//        Toast.makeText(UsersEditorActivity.this, R.string.error_negative_num, Toast.LENGTH_SHORT).show();
-//    }
-//
-//} else {
-//        // Error: the username is not valid
-//        Toast.makeText(UsersEditorActivity.this, R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
-//        }
-        // TODO Send to the activity
+            if (MyUtils.isValid(username) &&
+                    (numberOfKeys > 0) &&
+                    (keysPerQR > 0)) {
+
+                ((UsersEditorInterface) getActivity()).performServerRequest(username, avatar, numberOfKeys, keysPerQR);
+
+            } else {
+                Toast.makeText(getActivity(), R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (NumberFormatException e) {
+            Toast.makeText(getActivity(), R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showAvatarPickerDialog() {
@@ -140,4 +179,13 @@ public class UsersEditorFragment extends Fragment {
         avatarDialog = builder.create();
         avatarDialog.show();
     }
+
+    public interface UsersEditorInterface {
+        void saveUser(String username, int avatar);
+
+        void performClientRequest(String username, int avatar);
+
+        void performServerRequest(String username, int avatar, int numberOfKeys, int keysPerQR);
+    }
+
 }

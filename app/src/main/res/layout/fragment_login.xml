@@ -19,7 +19,8 @@
             android:id="@+id/passphrase_edit_text"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:textColor="@color/black"/>
 
         <Button
             android:id="@+id/login_button"
