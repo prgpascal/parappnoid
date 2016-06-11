@@ -20,25 +20,22 @@
     android:layout_height="match_parent"
     android:background="@drawable/background">
 
-    <!-- Message Content -->
-    <EditText
-        android:id="@+id/messageContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="clip_horizontal"
-        android:hint="@string/type_text"
-        android:textColor="@color/black" />
-
-    <!-- Message length counter -->
     <TextView
         android:id="@+id/messageLengthCounter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/messageContent"
         android:layout_alignParentRight="true"
         android:padding="5dp"
-        android:text=""
         android:textColor="@color/black"
         android:textSize="15dp" />
+
+    <EditText
+        android:id="@+id/messageContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/messageLengthCounter"
+        android:gravity="clip_horizontal"
+        android:hint="@string/type_text"
+        android:textColor="@color/black" />
 
 </RelativeLayout>

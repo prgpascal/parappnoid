@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2016 Riccardo Leschiutta.
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 Riccardo Leschiutta.
 
     This file is part of Parappnoid.
 
@@ -17,15 +16,15 @@
     along with Parappnoid.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentTop="true">
+    android:layout_alignParentTop="true"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/topToolbar"
-        android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:background="?attr/colorPrimaryDark"/>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimaryDark" />
 
 </LinearLayout>

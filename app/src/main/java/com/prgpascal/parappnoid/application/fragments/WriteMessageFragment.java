@@ -46,6 +46,8 @@ public class WriteMessageFragment extends Fragment implements WriteMessageActivi
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        contentLengthCounter.setText(0 + " / "+ (PLAINTEXT_LENGTH - 1));
+
         contentEditText.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 contentLengthCounter.setTextColor(ContextCompat.getColor(getActivity(),
