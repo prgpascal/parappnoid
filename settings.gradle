@@ -1,1 +1,1 @@
-include ':app', ':android-qr-data-transfer'
+include ':app', ':android-qr-data-transfer', ':bluerand-android'
