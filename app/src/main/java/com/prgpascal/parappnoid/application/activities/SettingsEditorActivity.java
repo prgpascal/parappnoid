@@ -68,7 +68,6 @@ public class SettingsEditorActivity extends AppCompatActivity implements
     }
 
     private void initToolbars() {
-        // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setTitle(R.string.db_settings);

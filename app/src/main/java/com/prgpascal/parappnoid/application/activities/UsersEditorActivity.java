@@ -123,7 +123,7 @@ public class UsersEditorActivity extends AppCompatActivity implements
     }
 
     private void createLayout() {
-        setContentView(R.layout.activity_toolbar_top_bottom);
+        setContentView(R.layout.activity_toolbar_top);
         Fragment fragment;
         if (activityRequestType.equals(EDIT_USERS))
             fragment = UsersEditorFragment.newInstance(userToEdit.getUsername(), userToEdit.getAvatar());
@@ -208,29 +208,11 @@ public class UsersEditorActivity extends AppCompatActivity implements
     }
 
     private void initToolbars() {
-        // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setTitle(
                 activityRequestType.equals(EDIT_USERS) ? R.string.edit_user : R.string.new_user
         );
-
-        // Toolbar BOTTOM
-        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.bottomToolbar);
-        toolbarBottom.inflateMenu(R.menu.editor_bottom_items);
-        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.delete:
-                        // Request the confirm to the user
-                        showNewDialog(DIALOG_TYPE_CONFIRM_DELETE);
-                        break;
-                }
-                return true;
-            }
-        });
-        toolbarBottom.setVisibility(activityRequestType.equals(EDIT_USERS) ? View.VISIBLE : View.GONE);
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.fragments.LoginFragment;
@@ -37,7 +36,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void createLayout() {
-        setContentView(R.layout.activity);
+        setContentView(R.layout.activity_login);
 
         Fragment fragment = LoginFragment.newInstance();
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();

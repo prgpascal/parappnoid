@@ -68,8 +68,6 @@ public class WriteMessageActivity extends AppCompatActivity implements
     private MyProgressDialogManager progressDialog = new MyProgressDialogManager();
     private String hexCiphertext;               // HEX version of the ciphertext.
 
-    private FloatingActionButton mFab;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,15 +132,7 @@ public class WriteMessageActivity extends AppCompatActivity implements
     }
 
     private void createLayout() {
-        setContentView(R.layout.activity_toolbar_top_bottom);
-
-        mFab = (FloatingActionButton)findViewById(R.id.fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
-        });
+        setContentView(R.layout.activity_toolbar_top);
 
         Fragment fragment = WriteMessageFragment.newInstance();
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -153,7 +143,6 @@ public class WriteMessageActivity extends AppCompatActivity implements
     }
 
     private void initToolbars() {
-        // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setTitle(selectedUser.getUsername());
@@ -175,23 +164,6 @@ public class WriteMessageActivity extends AppCompatActivity implements
                     }
                 }
         }
-
-        // Toolbar BOTTOM
-        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.bottomToolbar);
-//        toolbarBottom.inflateMenu(R.menu.write_message_bottom_items);
-        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.send:
-                        sendMessage();
-                        break;
-                }
-                return true;
-            }
-        });
-
-        toolbarBottom.setVisibility(View.GONE);
     }
 
     private void sendMessage() {

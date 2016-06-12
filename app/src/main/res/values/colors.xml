@@ -23,4 +23,11 @@
 
     <color name="black">#000</color>
     <color name="red">#FF0000</color>
+
+    <color name="transparent">#00aeaeae</color>
+
+    <color name="green_desatured">#87b76d</color>
+    <color name="green_odd_row">#518335</color>
+    <color name="green_even_row">#95ca79</color>
+
 </resources>

@@ -113,7 +113,7 @@ public class ReadMessageActivity extends AppCompatActivity implements
     }
 
     private void createLayout() {
-        setContentView(R.layout.activity_toolbar_top_bottom);
+        setContentView(R.layout.activity_toolbar_top);
 
         Fragment fragment = ReadMessageFragment.newInstance();
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();

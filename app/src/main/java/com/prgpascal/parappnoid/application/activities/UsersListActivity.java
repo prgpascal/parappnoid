@@ -161,7 +161,6 @@ public class UsersListActivity extends AppCompatActivity implements
     }
 
     private void initToolbars() {
-        // Toolbar TOP
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.topToolbar);
         setSupportActionBar(toolbarTop);
 
