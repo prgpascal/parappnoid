@@ -22,13 +22,11 @@ package com.prgpascal.parappnoid.application.activities;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -59,6 +57,7 @@ import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.SELE
  * Activity that allows the user to write and send a new encrypted message to a specified AssociatedUser.
  */
 public class WriteMessageActivity extends AppCompatActivity implements
+        WriteMessageFragment.WriteMessageInterface,
         DBUtils.DbResponseCallback {
 
     private AssociatedUser selectedUser;        // The selected AssociatedUser.
@@ -166,19 +165,11 @@ public class WriteMessageActivity extends AppCompatActivity implements
         }
     }
 
-    private void sendMessage() {
-        WriteMessageInterface frag = (WriteMessageInterface) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        try {
-            String plaintext = frag.getMessageContent();
-            hexCiphertext = tryEncryption(plaintext, selectedUser);
-        } catch (InvalidMessage e) {
-            Toast.makeText(getApplicationContext(), R.string.error_message_invalid, Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    public void sendMessage(String plaintext) {
+        hexCiphertext = tryEncryption(plaintext, selectedUser);
     }
 
-    public interface WriteMessageInterface {
-        String getMessageContent() throws InvalidMessage;
-    }
 
     //TODO unifica le eccezioni in un'unica ecezzione?
     public static class InvalidMessage extends Exception {
@@ -187,7 +178,7 @@ public class WriteMessageActivity extends AppCompatActivity implements
 
     /**
      * Try the encryption of the plaintext message.
-     * <p/>
+     * <p>
      * padID                   =  identifier of the OneTimePad key used.
      * plaintext               =  the user plaintext to be sent.
      * plaintextWithPadding    =  plaintext + some random padding bytes.
@@ -198,7 +189,7 @@ public class WriteMessageActivity extends AppCompatActivity implements
      * C                       =  ciphertext.
      * MAC                     =  Message authentication code.
      * HEX(...)                =  HEX string representation.
-     * <p/>
+     * <p>
      * P =                  (plaintext || padding || plaintextLength)      [101 bytes]
      * C =                  (P XOR Kp)                                     [101 bytes]
      * MAC =                SHA-256(Km || padID || C)                      [32 bytes]

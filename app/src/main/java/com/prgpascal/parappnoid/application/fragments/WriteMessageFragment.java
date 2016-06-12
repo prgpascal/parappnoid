@@ -1,6 +1,7 @@
 package com.prgpascal.parappnoid.application.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.prgpascal.parappnoid.R;
 import com.prgpascal.parappnoid.application.activities.WriteMessageActivity;
@@ -20,9 +22,10 @@ import static com.prgpascal.parappnoid.utils.Constants.EncryptionDecryptionConst
 /**
  * Created by prgpascal on 04/06/2016.
  */
-public class WriteMessageFragment extends Fragment implements WriteMessageActivity.WriteMessageInterface {
+public class WriteMessageFragment extends Fragment {
     private EditText contentEditText;           // The EditText for the message content.
     private TextView contentLengthCounter;      // TextView that shows the length of message.
+    private FloatingActionButton mFab;
 
     public static WriteMessageFragment newInstance() {
         return new WriteMessageFragment();
@@ -38,6 +41,7 @@ public class WriteMessageFragment extends Fragment implements WriteMessageActivi
 
         contentLengthCounter = (TextView) rootView.findViewById(R.id.messageLengthCounter);
         contentEditText = (EditText) rootView.findViewById(R.id.messageContent);
+        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
         return rootView;
     }
@@ -46,7 +50,7 @@ public class WriteMessageFragment extends Fragment implements WriteMessageActivi
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        contentLengthCounter.setText(0 + " / "+ (PLAINTEXT_LENGTH - 1));
+        contentLengthCounter.setText(0 + " / " + (PLAINTEXT_LENGTH - 1));
 
         contentEditText.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
@@ -65,17 +69,22 @@ public class WriteMessageFragment extends Fragment implements WriteMessageActivi
                 // Do nothing
             }
         });
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage();
+            }
+        });
     }
 
-    @Override
-    public String getMessageContent() throws WriteMessageActivity.InvalidMessage {
+    private void sendMessage() {
         String plaintext = contentEditText.getText().toString();
-        if (!isValid(plaintext))
-            throw new WriteMessageActivity.InvalidMessage();
-
-        return plaintext;
+        if (isValid(plaintext))
+            ((WriteMessageInterface) getActivity()).sendMessage(plaintext);
+        else
+            Toast.makeText(getActivity(), R.string.error_message_invalid, Toast.LENGTH_SHORT).show();
     }
-
 
     /**
      * Check if the plaintext is valid.
@@ -88,6 +97,10 @@ public class WriteMessageFragment extends Fragment implements WriteMessageActivi
         return (MyUtils.isValid(plaintext) && (plaintext.length() < PLAINTEXT_LENGTH));
     }
 
+
+    public interface WriteMessageInterface {
+        void sendMessage(String message);
+    }
 }
 
 

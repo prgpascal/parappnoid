@@ -1,6 +1,7 @@
 package com.prgpascal.parappnoid.application.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -32,6 +33,8 @@ public class UsersEditorFragment extends Fragment {
     private EditText numberOfKeysEditText;
     private EditText keysPerQrEditText;
     private Button associateButton;
+
+    private FloatingActionButton mFab;
 
     private int selectedAvatar = R.drawable.avatar0;
     private AlertDialog avatarDialog;
@@ -73,6 +76,7 @@ public class UsersEditorFragment extends Fragment {
         numberOfKeysEditText = (EditText) rootView.findViewById(R.id.n_keys);
         keysPerQrEditText = (EditText) rootView.findViewById(R.id.keys_per_qr);
         associateButton = (Button) rootView.findViewById(R.id.associate_btn);
+        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
         return rootView;
     }
@@ -118,11 +122,16 @@ public class UsersEditorFragment extends Fragment {
             }
         });
 
+        mFab.setImageResource(R.drawable.ic_save);
+        //TODO add FAB click linstener
+
         // Hide some elements..
         if (mIsEditUserRequestType) {
             associateButton.setVisibility(View.GONE);
             radioGroup.setVisibility(View.GONE);
             serverArea.setVisibility(View.GONE);
+        } else {
+            mFab.setVisibility(View.GONE);
         }
     }
 

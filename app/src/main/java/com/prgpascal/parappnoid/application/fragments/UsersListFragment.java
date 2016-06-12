@@ -20,6 +20,7 @@
 package com.prgpascal.parappnoid.application.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,10 +30,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.prgpascal.parappnoid.R;
+import com.prgpascal.parappnoid.application.activities.UsersListActivity;
 import com.prgpascal.parappnoid.application.adapters.UsersListAdapter;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 
 import java.util.ArrayList;
+
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.EDIT_USERS;
+import static com.prgpascal.parappnoid.utils.Constants.UserManagerConstants.PICK_USER;
 
 /**
  * Fragment that contains the list of associated users.
@@ -40,9 +45,15 @@ import java.util.ArrayList;
 public class UsersListFragment extends Fragment {
 	private ListView mUsersListView;
 	private UsersListAdapter mAdapter;
+	private FloatingActionButton mFab;
+	private static final String TAG_REQUEST_TYPE = "req_type";
 
-	public static UsersListFragment newInstance() {
-		return new UsersListFragment();
+	public static UsersListFragment newInstance(String activityRequestType) {
+		UsersListFragment fragment = new UsersListFragment();
+		Bundle args = new Bundle();
+		args.putString(TAG_REQUEST_TYPE, activityRequestType);
+		fragment.setArguments(args);
+		return fragment;
 	}
 
 	@Override
@@ -55,6 +66,7 @@ public class UsersListFragment extends Fragment {
 		// Inflate the layout
 		View rootView = inflater.inflate(R.layout.fragment_users_list, container, false);
 		mUsersListView = (ListView) rootView.findViewById(R.id.parent);
+		mFab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
         return rootView; 
 	}
@@ -65,6 +77,18 @@ public class UsersListFragment extends Fragment {
 
 		mAdapter = new UsersListAdapter(new ArrayList<AssociatedUser>(), getActivity());
 		mUsersListView.setAdapter(mAdapter);
+		mFab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				((UsersListActivity) getActivity()).createNewUser();
+			}
+		});
+
+		mFab.setImageResource(R.drawable.ic_add);
+
+		String activityRequestType = getArguments().getString(TAG_REQUEST_TYPE);
+		if (activityRequestType.equals(PICK_USER))
+			mFab.setVisibility(View.GONE);
 	}
 
 	public void updateLayout(ArrayList<AssociatedUser> users){

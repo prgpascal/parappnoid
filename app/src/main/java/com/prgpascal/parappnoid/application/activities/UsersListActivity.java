@@ -95,24 +95,6 @@ public class UsersListActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (activityRequestType.equals(EDIT_USERS))
-            getMenuInflater().inflate(R.menu.users_list_top_items, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.add:
-                createNewUser();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void showNewDialog(int dialogType) {
         switch (dialogType) {
             case DIALOG_TYPE_REQUEST_PASSPHRASE:
@@ -145,7 +127,7 @@ public class UsersListActivity extends AppCompatActivity implements
         // Set the layout
         setContentView(R.layout.activity_toolbar_top);
 
-        Fragment fragment = UsersListFragment.newInstance();
+        Fragment fragment = UsersListFragment.newInstance(activityRequestType);
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         trans.replace(R.id.fragment_container, fragment);
         trans.commit();
@@ -153,7 +135,7 @@ public class UsersListActivity extends AppCompatActivity implements
         initToolbars();
     }
 
-    private void createNewUser() {
+    public void createNewUser() {
         Intent intent = new Intent(UsersListActivity.this, UsersEditorActivity.class);
         intent.putExtra(ACTIVITY_REQUEST_TYPE, NEW_USER);
         intent.putExtra(PASSPHRASE, passphrase);
@@ -171,7 +153,7 @@ public class UsersListActivity extends AppCompatActivity implements
     }
 
     /**
-     * Method called by the RecyclerViewAdapter when a user is selected.
+     * Method called by the Adapter when a user is selected.
      * Is called either if the user want to pick an AssociatedUser or edit it.
      *
      * @param user the selected user.
