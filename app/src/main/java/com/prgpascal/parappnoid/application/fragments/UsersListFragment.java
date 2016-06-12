@@ -26,9 +26,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.prgpascal.parappnoid.R;
-import com.prgpascal.parappnoid.application.adapters.RecyclerViewAdapter;
+import com.prgpascal.parappnoid.application.adapters.UsersListAdapter;
 import com.prgpascal.parappnoid.model.AssociatedUser;
 
 import java.util.ArrayList;
@@ -37,9 +38,8 @@ import java.util.ArrayList;
  * Fragment that contains the list of associated users.
  */
 public class UsersListFragment extends Fragment {
-	private RecyclerView mRecyclerView;										// RecyclerView
-    private RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> mAdapter;	// RecyclerView Adapter
-    private RecyclerView.LayoutManager mLayoutManager;						// RecyclerView LayoutManager
+	private ListView mUsersListView;
+	private UsersListAdapter mAdapter;
 
 	public static UsersListFragment newInstance() {
 		return new UsersListFragment();
@@ -54,20 +54,21 @@ public class UsersListFragment extends Fragment {
 
 		// Inflate the layout
 		View rootView = inflater.inflate(R.layout.fragment_users_list, container, false);
-		
-		// RecyclerView (Defined here because of an Android SDK bug)
-		mRecyclerView = (RecyclerView) rootView.findViewById(R.id.parent);
-		mRecyclerView.setHasFixedSize(true);
-		mLayoutManager = new LinearLayoutManager(getActivity());
-		mRecyclerView.setLayoutManager(mLayoutManager);
+		mUsersListView = (ListView) rootView.findViewById(R.id.parent);
 
         return rootView; 
 	}
 
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		mAdapter = new UsersListAdapter(new ArrayList<AssociatedUser>(), getActivity());
+		mUsersListView.setAdapter(mAdapter);
+	}
+
 	public void updateLayout(ArrayList<AssociatedUser> users){
-		// RecyclerView Adapter
-		mAdapter = new RecyclerViewAdapter(users, getActivity());
-		mRecyclerView.setAdapter(mAdapter);
+		mAdapter.setData(users);
 	}
 
 }

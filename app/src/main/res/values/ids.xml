@@ -3,4 +3,5 @@
     <item name="write_message_btn" type="id"/>
     <item name="read_message_btn" type="id"/>
     <item name="contacts_btn" type="id"/>
+    <item name="item_position" type="id"/>
 </resources>
