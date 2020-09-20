@@ -1,5 +1,7 @@
 <img align="right" src="parappnoid-logo.png"/>
 
+⚠ This project is no longer actively maintained. 
+
 # Parappnoid
 Android App that allows you to encrypt text messages with the one-time pad encryption technique and exchange them through various third party messaging services, such as WhatsApp, Facebook, SMS etc. 
 In addition to the encryption and decryption of the messages, Parappnoid handles the generation, storage and exchange of the one-time pad keys.
